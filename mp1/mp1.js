@@ -94,32 +94,48 @@ function setIlliniVertices(gl) {
 }
 
 // Fill the buffer with the values that define a letter 'F'.
-function setGeometry2(gl) {
+function setupGeometry2(gl) {
+    /**
+     * Set up adjustable offsets for the middle rectangle in the I figure
+     */
     var I_rect_width = 20;
     var I_rect_height = 20;
     
     var left_offset = 10 + I_rect_width;
     var right_offset = 100 - I_rect_height;
+    var top_offset = 10 + I_rect_height;
+    var bottom_offset = 100 - I_rect_height;
 
-    var vertex_list = [[10, 10], [20, 10], [10, 30], [20, 30], [90, 10], [100, 10], [90, 30], [100,30], [10, 80], [20, 80], [10, 100], [20, 100], [90, 80], [100, 80], [90, 100], [100,100]];
-  
+    var vertex_list = [
+     [10, 10],
+     [left_offset, 10], 
+     [10, top_offset], 
+     [left_offset, top_offset], 
+     [right_offset, 10], 
+     [100, 10], 
+     [right_offset, top_offset], 
+     [100,top_offset], 
+     [10, bottom_offset], 
+     [left_offset, bottom_offset], 
+     [10, 100], 
+     [left_offset, 100], 
+     [right_offset, bottom_offset], 
+     [100, bottom_offset], 
+     [right_offset, 100], 
+     [100,100]];
+
     var edge_list = [[1, 2, 3], [3, 2, 4], [2, 5, 4], [4, 5, 7], [5, 6, 7], [7, 6, 8], [4, 7, 10], [10, 7, 13], [9, 10, 11], [11, 10, 12], [10, 13, 12], [12, 13, 15], [13, 14, 15], [15, 14, 16]];
-  
     var positions = [];
   
+    // Set positions based on edges and verticies
     for (var i = 0; i < edge_list.length; i++) {
-      // positions.push
       for (var j = 0; j < 3; j++) {
-        if (vertex_list[[edge_list[i][j] - 1]][0] == 20) {
-          positions.push(30);
-        } else if (vertex_list[[edge_list[i][j] - 1]][0] == 90) {
-          positions.push(80);
-        } else {
-          positions.push(vertex_list[[edge_list[i][j] - 1]][0]);
-        }
+        positions.push(vertex_list[[edge_list[i][j] - 1]][0]);
         positions.push(vertex_list[[edge_list[i][j] - 1]][1]);
       }
     }
+    
+    // Add vertices into buffer
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
   }
 console.log(positions)
