@@ -5,7 +5,7 @@
 
 
 /** @global WebGL context */
-var gl_context;
+var gl;
 
 /**
  * Get WebGL context for canvas
@@ -44,57 +44,9 @@ function updateColor() {
 }
 
 /**
- * Initialize WebGL canvas, context, shaders, rendering engines
+ * Set up Illini mesh, vertices, edges
  */
-function startup() {
-    /**
-     * 1. Retrieve canvas element by id
-     * 2. Get rendering context
-     * 3. Set up shaders and buffers
-     * 3. Draw graphics from element
-     */
-    var canvas = document.getElementById("mp1GLCanvas")
-    gl_context = getGLContext(canvas)
-
-    /**
-     * 1. Draw geometry for Illini
-     * 2. Use two triangles overlapped to create the border
-     * 3. Scale the background triangle slightly larger than the first
-     *  1. Set background I to orange
-     *  2. Set foreground I to blue
-     *  3. Maintain origin for triangles
-     * 4. Animate using affine transformations (update geometry for every frame)
-     */
-
-    gl_context.clearColor(0.0, 0.0, 0.0, 0.0) // Specifies color for clear canvas
-
-}
-
-function setIlliniVertices(gl) {
-    // Initialize vertexes and edge sets for all triangles
-    var vertex_set = [[10, 10], [20, 10], [10, 30], [20, 30], [90, 10], [100, 10], [90, 30], [100,30], [10, 80], [20, 80], [10, 100], [20, 100], [90, 80], [100, 80], [90, 100], [100,100]]
-    var edge_set = [[1, 2, 3], [3, 2, 4], [2, 5, 4], [4, 5, 7], [5, 6, 7], [7, 6, 8], [4, 7, 10], [10, 7, 13], [9, 10, 11], [11, 10, 12], [10, 13, 12], [12, 13, 15], [13, 14, 15], [15, 14, 16]]
-    var positions = []
-    
-    // Iterate over all vertexes in each edge - 1
-    // Insert all vertexes in each edge
-    // Insert value into new array
-    // Iterate over all edges
-    // Insert value into array based on every edge
-    for (var i = 0; i < edge_set.length; i++) {
-        // positions.push
-      for (var j = 0; j < 3; j++) {
-          positions.push(vertex_set[[edge_set[i][j] - 1]][0])
-        positions.push(vertex_set[[edge_set[i][j] - 1]][1])
-      }
-    }
-
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW)
-    
-}
-
-// Fill the buffer with the values that define a letter 'F'.
-function setupGeometry2(gl) {
+function initializeGeometry() {
     /**
      * Set up adjustable offsets for the middle rectangle in the I figure
      */
@@ -140,54 +92,76 @@ function setupGeometry2(gl) {
   }
 console.log(positions)
 
+function initalizeBuffers() {
+  var positionBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, positiionBuffer)
+}
+
+function initalizeShaders() {
+  var vertexShader = initializeShader("vertex-shader", gl.VERTEX_SHADER)
+  var fragmentShader = initializeShader("fragment-shader", gl.FRAGMENT_SHADER)
+
+  shaderProgram = gl.createProgram();
+  gl.attachShader(shaderProgram, vertexShader)
+  gl.attachShader(shaderProgram, fragmentShader)
+  gl.linkProgram(shaderProgram)
+
+  if (gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+    gl.useProgram(shaderProgram);
+    shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+    shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor"); 
+  }
+
+  console.log("initializeShader: Error setting up shaders")
+}
+
 /**
  * Initialize shaders
- * @param {string} id of vertex/fragment shader to load
+ * @param {string} id document id of vertex/fragment shader to load from DOM
+ * @param {*} type fragment or vertex(gl.VERTEX_SHADER, gl.FRAGMENT_SHADER)
  */
-function initializeShaders(id)
-{
-  /**
-   * TODO
-   */
+function initializeShader(id, type) {
+  var shaderSource = document.getElementById(id).text;
+  var shader = gl.createShader(type);
+
+  gl.shaderSource(shader, shaderSource);
+  gl.compileShader(shader);
+
+  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    return shader;
+  }
+
+  console.log("initializeShaders: Error compiling shader" + gl.getShaderInfoLog(shader));
+  gl.deleteShader(shader);
 }
 
 /**
- * Initialize shader programs (for vertex and fragment shader)
+ * Initialize WebGL canvas, context, shaders, rendering engines
  */
+function startup() {
+  /**
+   * 1. Retrieve canvas element by id
+   * 2. Get rendering context
+   * 3. Set up shaders and buffers
+   * 3. Draw graphics from element
+   */
+  var canvas = document.getElementById("mp1GLCanvas")
+  gl = getGLContext(canvas)
 
- /**
-  * Hello Color
-  * attribute vec4 aVertexColor;
-attribute vec3 aVertexPosition;
-varying vec4 vColor;
-void main(void) {
-    gl_Position = vec4(aVertexPosition, 1.0);
-    vColor = aVertexColor;
+  initializeShaders();
+  initializeBuffers();
+  initializeGeometry();
+
+  /**
+   * 1. Draw geometry for Illini
+   * 2. Use two triangles overlapped to create the border
+   * 3. Scale the background triangle slightly larger than the first
+   *  1. Set background I to orange
+   *  2. Set foreground I to blue
+   *  3. Maintain origin for triangles
+   * 4. Animate using affine transformations (update geometry for every frame)
+   */
+
+  gl.clearColor(0.0, 0.0, 0.0, 0.0) // Specifies color for clear canvas
+
 }
-</script>
-  
-<script id="shader-fs" type="x-shader/x-fragment">
-precision mediump float;
-varying vec4 vColor;
-void main(void) {
-        gl_FragColor = vColor;
- }
-  * 
-  */
-
-/* Hello Triangle
- var vertexShaderSource = 
- "attribute vec3 aVertexPosition;                 \n" +
- "void main() {                                   \n" +
- "  gl_Position = vec4(aVertexPosition, 1.0);     \n" +
- "}                                               \n";           
-
-var fragmentShaderSource = 
-  "precision mediump float;                    \n"+
-  "void main() {                               \n"+
-  "  gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);  \n"+
-  "}                                           \n";
-  
-**/
-
-

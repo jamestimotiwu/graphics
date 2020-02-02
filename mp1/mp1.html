@@ -5,6 +5,34 @@
         <meta charset="utf-8">
     </head>
 
+    <script id="vertex-shader" type="x-shader">
+        attribute vec3 vertex_position;
+        uniform vec2 u_resolution;
+        uniform vec2 u_scale;
+        uniform vec2 u_translation;
+
+        void main(void) {
+            // Transformations
+            // Scaling vertex position
+            vec2 scaled_position = vertex_position * u_scale;
+    
+            // Add translation
+            vec2 transform_position = scaled_position + u_translation;
+            
+            // Compute pixel space to clip space
+            vec2 clip_position = ((vertex_position / u_resolution) * 2.0) - 1.0; 
+            gl_Position = vec4(clip_position * vec2(1, -1), 0, 1.0);
+        }
+    </script>
+
+    <script id="fragment-shader" type="x-shader">
+        precision mediump float;
+        varying vec4 vColor;
+        void main(void) {
+            gl_FragColor = vColor;
+        }
+    </script>
+
     <script src="mp1.js"></script>
     <body onload="startup();">
         <canvas id="mp1GLCanvas" width="500" height="500"></canvas>
