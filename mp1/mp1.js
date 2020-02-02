@@ -109,7 +109,7 @@ function initializeGeometry() {
 /**
  * Draws function with transformation factor on positions
  */
-function draw(scale, translation) {
+function draw(scale, translation, color) {
   /**
   var resolution;
   var translation;
@@ -117,21 +117,6 @@ function draw(scale, translation) {
   */
  // var scale = [1.08, 1.41]
  // var translation = [100, 150];
- var positionAttributeLocation = gl.getAttribLocation(shaderProgram, "a_position");
- 
- // Tell WebGL how to convert from clip space to pixels
- gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
- // Clear canvas
- gl.clear(gl.COLOR_BUFFER_BIT);
- gl.useProgram(shaderProgram);
- 
-  // Set window resolution
-  gl.uniform2f(gl.getUniformLocation(shaderProgram, "u_resolution"), gl.canvas.width, gl.canvas.height);
-  gl.enableVertexAttribArray(positionAttributeLocation);
-  // 2 components per iteration
-  gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
-  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-
   // Draw geometry (primitive type, offset, number of points in all triangles)
   initializeGeometry()
 
@@ -139,9 +124,8 @@ function draw(scale, translation) {
   gl.uniform2fv(gl.getUniformLocation(shaderProgram, "u_translation"), translation);
   // Set scaling magnitude 
   gl.uniform2fv(gl.getUniformLocation(shaderProgram, "u_scale"), scale);
-  //gl.drawArrays(gl.TRIANGLES, 0, vertexPositionBuffer.numberOfItems);
   // Set color
-  gl.uniform4f(gl.getUniformLocation(shaderProgram, "u_color"), 0, 1, 1, 1)
+  gl.uniform4fv(gl.getUniformLocation(shaderProgram, "u_color"), color)
 
   gl.drawArrays(gl.TRIANGLES, 0, 42)
 }
@@ -212,8 +196,24 @@ function startup() {
   initializeShaderProgram();
   initializeBuffers();
   gl.clearColor(1.0, 1.0, 1.0, 1.0);
-  draw([1.08, 1.41], [110, 150]);
-  draw([1.50, 1.41], [100, 150]);
+
+  var positionAttributeLocation = gl.getAttribLocation(shaderProgram, "a_position");
+ 
+ // Tell WebGL how to convert from clip space to pixels
+  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+  // Clear canvas
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.useProgram(shaderProgram);
+ 
+  // Set window resolution
+  gl.uniform2f(gl.getUniformLocation(shaderProgram, "u_resolution"), gl.canvas.width, gl.canvas.height);
+  gl.enableVertexAttribArray(positionAttributeLocation);
+  // 2 components per iteration
+  gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+
+  draw([1.08, 1.41], [110, 150], [1, 0, 1, 1]);
+  draw([1, 1.41], [110, 150], [1, 1, 0, 1]);
 
   /**
    * 1. Draw geometry for Illini
