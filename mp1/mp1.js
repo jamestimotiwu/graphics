@@ -13,6 +13,9 @@ var shaderProgram;
 /** @global Position buffer */
 var positionBuffer;
 
+/** @global Color buffer */
+var colorBuffer;
+
 /**
  * Get WebGL context for canvas
  * @param {element} canvas canvas
@@ -71,6 +74,7 @@ function initializeGeometry() {
     var top_offset = 10 + I_rect_height;
     var bottom_offset = 100 - I_rect_height;
     var border_size = 0.01; */
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
     var base_height = 0.25;
     var base_width = 0.75;
@@ -114,7 +118,7 @@ function initializeGeometry() {
     ]
 /*     var vertex_list = [
       // Top rectangle for border
-      [-0.5, 0.5],
+      [-0.5, 0.5],WWW
       [0.5, 0.5],
       [-0.5, 0.3],
       [0.5, 0.3],
@@ -138,24 +142,7 @@ function initializeGeometry() {
     var vertex_list_border = [
 
     ]
-
-    var edge_list = [
-      // Top rectangle for border
-      [1, 2, 3],
-      [3, 2, 4],
-      // Middle rectangle for border
-      [5, 6, 7],
-      [7, 6, 8],
-      // Bottom rectangle for border
-      [9, 10, 11],
-      [12, 10, 11]
-      // Top rectangle
-
-      // Middle rectangle 
-
-      // Bottom rectangle
-    ]
- */
+    */
     var positions = [];
     // Set positions based on edges and verticies
     for (var i = 0; i < edge_list.length; i++) {
@@ -167,12 +154,25 @@ function initializeGeometry() {
     
     // Add vertices into buffer
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+}
+
+function setColor() {
+  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer)
+  var color = [0.07, 0.16, 0.295, 1]
+  var colors = [];
+  for (var i = 0; i < 18; i++) {
+    for (var j = 0; j < 4; j++) {
+      colors.push(color[j]);
+    }
   }
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+}
+  
 
 /**
  * Draws function with transformation factor on positions
  */
-function draw(scale, translation, color) {
+function draw() {
   /**
   var resolution;
   var translation;
@@ -182,13 +182,14 @@ function draw(scale, translation, color) {
  // var translation = [100, 150];
   // Draw geometry (primitive type, offset, number of points in all triangles)
   initializeGeometry()
+  setColor();
 
   // Set translation
-  gl.uniform2fv(gl.getUniformLocation(shaderProgram, "u_translation"), translation);
+  //gl.uniform2fv(gl.getUniformLocation(shaderProgram, "u_translation"), translation);
   // Set scaling magnitude 
-  gl.uniform2fv(gl.getUniformLocation(shaderProgram, "u_scale"), scale);
+  //gl.uniform2fv(gl.getUniformLocation(shaderProgram, "u_scale"), scale);
   // Set color
-  gl.uniform4fv(gl.getUniformLocation(shaderProgram, "u_color"), color)
+  //gl.uniform4fv(gl.getUniformLocation(shaderProgram, "u_color"), [0.07, 0.16, 0.295, 1])
 
   gl.drawArrays(gl.TRIANGLES, 0, 18)
 }
@@ -198,7 +199,9 @@ function draw(scale, translation, color) {
  */
 function initializeBuffers() {
   var positionAttributeLocation = gl.getAttribLocation(shaderProgram, "a_position");
+  var colorAttributeLocation = gl.getAttribLocation(shaderProgram, "a_color");
   positionBuffer = gl.createBuffer();
+  colorBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
  // Tell WebGL how to convert from clip space to pixels
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
@@ -210,6 +213,12 @@ function initializeBuffers() {
   gl.enableVertexAttribArray(positionAttributeLocation);
   // 2 components per iteration
   gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+
+  // Enable color Buffers
+  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+  gl.enableVertexAttribArray(colorAttributeLocation);
+  gl.vertexAttribPointer(colorAttributeLocation, 4, gl.FLOAT, false, 0, 0);
+
 }
 
 /**
@@ -270,9 +279,9 @@ function startup() {
   initializeShaderProgram();
   initializeBuffers();
   gl.clearColor(1.0, 1.0, 1.0, 1.0);
-
-  draw([1.08, 1.41], [0, 0], [0.07, 0.16, 0.295, 1]);
-  draw([1.0, 1.41], [0, 0], [0.909, 0.29, 0.15, 1]);
+  draw();
+  //draw([1.08, 1.41], [0, 0], [0.07, 0.16, 0.295, 1]);
+  //draw([1.0, 1.41], [0, 0], [0.909, 0.29, 0.15, 1]);
 
   /**
    * 1. Draw geometry for Illini
