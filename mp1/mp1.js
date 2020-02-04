@@ -65,16 +65,54 @@ function initializeGeometry() {
     /**
      * Set up adjustable offsets for the middle rectangle in the I figure
      */
-    var I_rect_width = 20;
-    var I_rect_height = 20;
-    
+    /* 
     var left_offset = 10 + I_rect_width;
     var right_offset = 100 - I_rect_height;
     var top_offset = 10 + I_rect_height;
     var bottom_offset = 100 - I_rect_height;
-    var border_size = 0.01;
+    var border_size = 0.01; */
+
+    var base_height = 0.25;
+    var base_width = 0.75;
+    var column_height = 1.0;
+    var column_width = 0.4;
+
+    // Translate to clip
+    var translated_base_h = base_height - base_height / 2.0;
+    var translated_base_w = base_width - base_width / 2.0;
+    var translated_column_h = column_height - column_height / 2.0;
+    var translated_column_w = column_width - column_width / 2.0;
 
     var vertex_list = [
+      // Top base rectangle
+      [-translated_base_w, translated_column_h],
+      [translated_base_w, translated_column_h],
+      [-translated_base_w, translated_column_h - base_height],
+      [translated_base_w, translated_column_h - base_height],
+      // Column rectangle
+      [-translated_column_w, translated_column_h],
+      [translated_column_w, translated_column_h],
+      [-translated_column_w, -translated_column_h],
+      [translated_column_w, -translated_column_h],
+      // Bottom base rectangle
+      [-translated_base_w, -translated_column_h + base_height],
+      [translated_base_w, -translated_column_h + base_height],
+      [-translated_base_w, -translated_column_h],
+      [translated_base_w, -translated_column_h]
+    ]
+
+    var edge_list = [
+      // Top rectangle for border
+      [1, 2, 3],
+      [3, 2, 4],
+      // Middle rectangle for border
+      [5, 6, 7],
+      [7, 6, 8],
+      // Bottom rectangle for border
+      [9, 10, 11],
+      [12, 10, 11]
+    ]
+/*     var vertex_list = [
       // Top rectangle for border
       [-0.5, 0.5],
       [0.5, 0.5],
@@ -98,7 +136,7 @@ function initializeGeometry() {
     ]
 
     var vertex_list_border = [
-      
+
     ]
 
     var edge_list = [
@@ -117,43 +155,7 @@ function initializeGeometry() {
 
       // Bottom rectangle
     ]
-
-/*     var vertex_list = [
-     [10, 10],
-     [left_offset, 10], 
-     [10, top_offset], 
-     [left_offset, top_offset], 
-     [right_offset, 10], 
-     [100, 10], 
-     [right_offset, top_offset], 
-     [100,top_offset], 
-     [10, bottom_offset], 
-     [left_offset, bottom_offset], 
-     [10, 100], 
-     [left_offset, 100], 
-     [right_offset, bottom_offset], 
-     [100, bottom_offset], 
-     [right_offset, 100], 
-     [100,100]];
-
-    // Triangles for blue I
-    var edge_list = [
-      [1, 2, 3], 
-      [3, 2, 4], 
-      [2, 5, 4], 
-      [4, 5, 7], 
-      [5, 6, 7], 
-      [7, 6, 8], 
-      [4, 7, 10], 
-      [10, 7, 13], 
-      [9, 10, 11], 
-      [11, 10, 12], 
-      [10, 13, 12], 
-      [12, 13, 15], 
-      [13, 14, 15], 
-      [15, 14, 16]];
-    var positions = [];
-   */
+ */
     var positions = [];
     // Set positions based on edges and verticies
     for (var i = 0; i < edge_list.length; i++) {
