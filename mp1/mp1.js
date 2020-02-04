@@ -72,8 +72,53 @@ function initializeGeometry() {
     var right_offset = 100 - I_rect_height;
     var top_offset = 10 + I_rect_height;
     var bottom_offset = 100 - I_rect_height;
+    var border_size = 0.01;
 
     var vertex_list = [
+      // Top rectangle for border
+      [-0.5, 0.5],
+      [0.5, 0.5],
+      [-0.5, 0.3],
+      [0.5, 0.3],
+      // Middle rectangle for border
+      [-0.3, 0.5],
+      [0.3, 0.5],
+      [-0.3, -0.5],
+      [0.3, -0.5],
+      // Bottom rectangle for border
+      [-0.5, -0.3],
+      [0.5, -0.3],
+      [-0.5, -0.5],
+      [0.5, -0.5],
+      // Top rectangle
+
+      // Middle rectangle
+      
+      // Bottom rectangle
+    ]
+
+    var vertex_list_border = [
+      
+    ]
+
+    var edge_list = [
+      // Top rectangle for border
+      [1, 2, 3],
+      [3, 2, 4],
+      // Middle rectangle for border
+      [5, 6, 7],
+      [7, 6, 8],
+      // Bottom rectangle for border
+      [9, 10, 11],
+      [12, 10, 11]
+      // Top rectangle
+
+      // Middle rectangle 
+
+      // Bottom rectangle
+    ]
+
+/*     var vertex_list = [
      [10, 10],
      [left_offset, 10], 
      [10, top_offset], 
@@ -91,9 +136,25 @@ function initializeGeometry() {
      [right_offset, 100], 
      [100,100]];
 
-    var edge_list = [[1, 2, 3], [3, 2, 4], [2, 5, 4], [4, 5, 7], [5, 6, 7], [7, 6, 8], [4, 7, 10], [10, 7, 13], [9, 10, 11], [11, 10, 12], [10, 13, 12], [12, 13, 15], [13, 14, 15], [15, 14, 16]];
+    // Triangles for blue I
+    var edge_list = [
+      [1, 2, 3], 
+      [3, 2, 4], 
+      [2, 5, 4], 
+      [4, 5, 7], 
+      [5, 6, 7], 
+      [7, 6, 8], 
+      [4, 7, 10], 
+      [10, 7, 13], 
+      [9, 10, 11], 
+      [11, 10, 12], 
+      [10, 13, 12], 
+      [12, 13, 15], 
+      [13, 14, 15], 
+      [15, 14, 16]];
     var positions = [];
-  
+   */
+    var positions = [];
     // Set positions based on edges and verticies
     for (var i = 0; i < edge_list.length; i++) {
       for (var j = 0; j < 3; j++) {
@@ -127,15 +188,26 @@ function draw(scale, translation, color) {
   // Set color
   gl.uniform4fv(gl.getUniformLocation(shaderProgram, "u_color"), color)
 
-  gl.drawArrays(gl.TRIANGLES, 0, 42)
+  gl.drawArrays(gl.TRIANGLES, 0, 18)
 }
 
 /**
  * Initialize buffer for vertex position
  */
 function initializeBuffers() {
+  var positionAttributeLocation = gl.getAttribLocation(shaderProgram, "a_position");
   positionBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
+  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+ // Tell WebGL how to convert from clip space to pixels
+  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+  // Clear canvas
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.useProgram(shaderProgram);
+  // Set window resolution
+  gl.uniform2f(gl.getUniformLocation(shaderProgram, "u_resolution"), gl.canvas.width, gl.canvas.height);
+  gl.enableVertexAttribArray(positionAttributeLocation);
+  // 2 components per iteration
+  gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
 }
 
 /**
@@ -197,23 +269,8 @@ function startup() {
   initializeBuffers();
   gl.clearColor(1.0, 1.0, 1.0, 1.0);
 
-  var positionAttributeLocation = gl.getAttribLocation(shaderProgram, "a_position");
- 
- // Tell WebGL how to convert from clip space to pixels
-  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-  // Clear canvas
-  gl.clear(gl.COLOR_BUFFER_BIT);
-  gl.useProgram(shaderProgram);
- 
-  // Set window resolution
-  gl.uniform2f(gl.getUniformLocation(shaderProgram, "u_resolution"), gl.canvas.width, gl.canvas.height);
-  gl.enableVertexAttribArray(positionAttributeLocation);
-  // 2 components per iteration
-  gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
-  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-
-  draw([1.08, 1.41], [110, 150], [1, 0, 1, 1]);
-  draw([1, 1.41], [110, 150], [1, 1, 0, 1]);
+  draw([1.08, 1.41], [0, 0], [0.07, 0.16, 0.295, 1]);
+  draw([1.0, 1.41], [0, 0], [0.909, 0.29, 0.15, 1]);
 
   /**
    * 1. Draw geometry for Illini

@@ -20,8 +20,9 @@
             vec2 transform_position = scaled_position + u_translation;
             
             // Compute pixel space to clip space
-            vec2 clip_position = ((transform_position / u_resolution) * 2.0) - 1.0; 
-            gl_Position = vec4(clip_position * vec2(1, -1), 0, 1.0);
+            //vec2 clip_position = ((transform_position / u_resolution) * 2.0) - 1.0; 
+            //gl_Position = vec4(clip_position * vec2(1, -1), 0, 1.0);
+            gl_Position = vec4(a_position, 0, 1.0);
         }
     </script>
 
