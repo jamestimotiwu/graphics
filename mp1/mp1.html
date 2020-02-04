@@ -6,12 +6,15 @@
     </head>
 
     <script id="vertex-shader" type="x-shader">
-        attribute vec2 a_position;
+        attribute vec3 a_position;
         attribute vec4 a_color;
         varying vec4 v_color;
 
+        // Affine transformation matrix
+        uniform mat4 uMVMatrix;
+
         void main(void) {
-            gl_Position = vec4(a_position, 0, 1.0);
+            gl_Position = uMVMatrix*vec4(a_position, 1.0);
             v_color = a_color;
         }
     </script>
@@ -25,6 +28,7 @@
         }
     </script>
     <script src="gl-matrix-min.js"></script>
+    <script type="text/javascript" src="webgl-utils.js"></script>
     <script src="mp1.js"></script>
     <body onload="startup();">
         <canvas id="mp1GLCanvas" width="500" height="500"></canvas>

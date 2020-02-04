@@ -15,6 +15,12 @@ var positionBuffer;
 /** @global Color buffer */
 var colorBuffer;
 
+/** @global Modelview matrix*/
+var mvMatrix = glMatrix.mat4.create();
+
+/** @global Angle of rotation */
+var defAngle = 0;
+
 /**
  * Get WebGL context for canvas
  * @param {element} canvas canvas
@@ -172,6 +178,12 @@ function initializeColor() {
 function draw() {
   initializeGeometry()
   initializeColor();
+  var rotAngle;
+  // Create transformation, use handle to send to shader
+  glMatrix.mat4.identity(mvMatrix);
+  glMatrix.mat4.rotateX(mvMatrix, mvMatrix, defAngle * Math.PI / 180)
+  gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
+
   gl.drawArrays(gl.TRIANGLES, 0, 36)
 }
 
@@ -220,7 +232,8 @@ function initializeShaderProgram() {
   if (gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
     gl.useProgram(shaderProgram);
     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "a_position");
-    shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "u_color"); 
+    shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "u_color");
+    shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
     return shaderProgram;
   }
 
@@ -247,6 +260,16 @@ function initializeShader(id, type) {
   gl.deleteShader(shader);
 }
 
+function tick() {
+  requestAnimationFrame(tick);
+  draw();
+  animate();
+}
+
+function animate() {
+  defAngle = (defAngle + 1.0) % 360;
+}
+
 /**
  * Initialize WebGL canvas, context, shaders, rendering engines
  */
@@ -263,5 +286,6 @@ function startup() {
   initializeShaderProgram();
   initializeBuffers();
   gl.clearColor(1.0, 1.0, 1.0, 1.0);
-  draw();
+  tick();
+  //draw();
 }
