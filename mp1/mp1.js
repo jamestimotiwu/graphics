@@ -21,6 +21,7 @@ var mvMatrix = glMatrix.mat4.create();
 /** @global Angle of rotation */
 var defAngle = 0;
 
+var t = 0; 
 /**
  * Get WebGL context for canvas
  * @param {element} canvas canvas
@@ -178,10 +179,11 @@ function initializeColor() {
 function draw() {
   initializeGeometry()
   initializeColor();
-  var rotAngle;
   // Create transformation, use handle to send to shader
   glMatrix.mat4.identity(mvMatrix);
-  glMatrix.mat4.rotateX(mvMatrix, mvMatrix, defAngle * Math.PI / 180)
+  //glMatrix.mat4.rotateZ(mvMatrix, mvMatrix, defAngle * Math.PI) / 180)
+  glMatrix.mat4.translate(mvMatrix, mvMatrix, [(t % Math.PI) - 1.0, Math.sin(6*t)/2.0, 0.4]);
+  glMatrix.mat4.scale(mvMatrix, mvMatrix, [0.5, 0.5, 0.5]);
   gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
 
   gl.drawArrays(gl.TRIANGLES, 0, 36)
@@ -266,8 +268,29 @@ function tick() {
   animate();
 }
 
+function bounce() {
+  // y(t) = y0 + vyt + 1/2gt^2
+}
+
+/**
+ * Linear interpolation for 2D points
+ * @param {*} Out 
+ * @param {*} A 
+ * @param {*} B 
+ * @param {*} t 
+ */
+function lerp(Out, A, B, t) {
+  Out[0] = A[0] + (B[0] - A[0])*t;
+  Out[1] = A[1] + (B[1] - A[1])*t;
+}
+
 function animate() {
-  defAngle = (defAngle + 1.0) % 360;
+  defAngle = (defAngle + 3.0) % 360;
+  t = t + 0.03;
+  // Elapsed time is useful, basing transformation on elapsedTime instead of frame count
+  // framerates may vary
+  // Interpolation, key frames (artist generated geometry)
+  // Interpolation: calculated intermediate frames
 }
 
 /**
