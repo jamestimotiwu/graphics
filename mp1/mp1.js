@@ -181,9 +181,10 @@ function draw() {
   initializeColor();
   // Create transformation, use handle to send to shader
   glMatrix.mat4.identity(mvMatrix);
-  //glMatrix.mat4.rotateZ(mvMatrix, mvMatrix, defAngle * Math.PI) / 180)
-  glMatrix.mat4.translate(mvMatrix, mvMatrix, [(t % Math.PI) - 1.0, Math.sin(6*t)/2.0, 0.4]);
-  glMatrix.mat4.scale(mvMatrix, mvMatrix, [0.5, 0.5, 0.5]);
+  //glMatrix.mat4.rotateX(mvMatrix, mvMatrix, defAngle * Math.PI / 180)
+  glMatrix.mat4.translate(mvMatrix, mvMatrix, [(t % Math.PI) - 1.5, Math.sin(6*t)/(1.2+(t % Math.PI)/1.5), 0.4]);
+  glMatrix.mat4.scale(mvMatrix, mvMatrix, [0.3, Math.sin(6*t)/8.0 + 0.3, 0.3]);
+
   gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
 
   gl.drawArrays(gl.TRIANGLES, 0, 36)
