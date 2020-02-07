@@ -57,11 +57,10 @@ function updateTransforms() {
 /**
  * Set up Illini mesh, vertices, edges
  */
-function initializeGeometry() {
+function generateIlliniGeometry() {
     /**
      * Set up adjustable offsets for the middle rectangle in the I figure
      */
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     var border_size = 0.045;
     var base_height = 0.25;
     var base_width = 0.72;
@@ -140,16 +139,10 @@ function initializeGeometry() {
         positions.push(vertex_list[[triangles[i][j] - 1]][1]);
       }
     }
-    
-    // Add vertices into buffer
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+    return positions;
 }
 
-/**
- * Set up Illini colors for border and shape
- */
-function initializeColor() {
-  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer)
+function generateIlliniColors() {
   var colorBorder = [0.07, 0.16, 0.295, 1]
   var colorShape = [0.909, 0.29, 0.15, 1]
   var colors = [];
@@ -169,16 +162,28 @@ function initializeColor() {
       colors.push(colorShape[j]);
     }
   }
+  return colors;
+}
 
+function bufferGeometry(positions) {
+  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+}
+
+/**
+ * Set up Illini colors for border and shape
+ */
+function bufferColors(colors) {
+  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer)
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
 }  
 
 /**
  * Draws function with transformation factor on positions
  */
-function draw() {
-  initializeGeometry()
-  initializeColor();
+function draw(positions, colors) {
+  bufferGeometry(positions);
+  bufferColors(colors);
   // Create transformation, use handle to send to shader
   glMatrix.mat4.identity(mvMatrix);
   //glMatrix.mat4.rotateX(mvMatrix, mvMatrix, defAngle * Math.PI / 180)
@@ -186,7 +191,6 @@ function draw() {
   glMatrix.mat4.scale(mvMatrix, mvMatrix, [0.3, Math.sin(6*t)/8.0 + 0.3, 0.3]);
 
   gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
-
   gl.drawArrays(gl.TRIANGLES, 0, 36)
 }
 
@@ -265,7 +269,9 @@ function initializeShader(id, type) {
 
 function tick() {
   requestAnimationFrame(tick);
-  draw();
+  positions = generateIlliniGeometry()
+  colors = generateIlliniColors()
+  draw(positions, colors);
   animate();
 }
 
