@@ -120,9 +120,7 @@ function generateIlliniGeometry() {
       [9, 10, 11],
       [12, 10, 11]
     ]
-
     var positions = [];
-    // Set positions based on edges and verticies
 
     // Border rectangles
     for (var i = 0; i < triangles.length; i++) {
@@ -267,12 +265,20 @@ function initializeShader(id, type) {
   gl.deleteShader(shader);
 }
 
+/**
+ * Animation tick with radio button
+ */
 function tick() {
   requestAnimationFrame(tick);
-  positions = generateIlliniGeometry()
-  colors = generateIlliniColors()
-  draw(positions, colors);
-  animate();
+
+  if (document.getElementById('r1').checked) {
+    positions = generateIlliniGeometry()
+    colors = generateIlliniColors()
+    draw(positions, colors);
+    animate();
+  } else {
+    gl.clear(gl.COLOR_BUFFER_BIT);
+  }
 }
 
 function bounce() {
@@ -317,5 +323,4 @@ function startup() {
   initializeBuffers();
   gl.clearColor(1.0, 1.0, 1.0, 1.0);
   tick();
-  //draw();
 }
