@@ -3,6 +3,7 @@
  * @author James Timotiwu <jit2@illinois.edu>
  */
 
+/** Rendering globals */
 /** @global WebGL context */
 var gl;
 
@@ -15,6 +16,16 @@ var positionBuffer;
 /** @global Color buffer */
 var colorBuffer;
 
+/** Meshing globals */
+/** @global Mesh position vertex set
+ *  Indexes are mapped to same color index
+*/
+var meshSet = []
+
+/** @global Color vertex set*/
+var colorSet = []
+
+/** Transformation globals */
 /** @global Modelview matrix*/
 var mvMatrix = glMatrix.mat4.create();
 
@@ -272,11 +283,13 @@ function tick() {
   requestAnimationFrame(tick);
 
   if (document.getElementById('r1').checked) {
-    positions = generateIlliniGeometry()
-    colors = generateIlliniColors()
-    draw(positions, colors);
+    // Illini Animation
+    // meshSet[0], colorSet[0] store Illni mesh and colors
+    draw(meshSet[0], colorSet[0]);
     animate();
   } else {
+    // Own animation
+    // draw different set of meshes
     gl.clear(gl.COLOR_BUFFER_BIT);
   }
 }
@@ -306,6 +319,11 @@ function animate() {
   // Interpolation: calculated intermediate frames
 }
 
+function Meshes() {
+  meshSet.push(generateIlliniGeometry())
+  colorSet.push(generateIlliniColors())
+}
+
 /**
  * Initialize WebGL canvas, context, shaders, rendering engines
  */
@@ -318,7 +336,7 @@ function startup() {
    */
   var canvas = document.getElementById("mp1GLCanvas")
   gl = getGLContext(canvas)
-
+  Meshes();
   initializeShaderProgram();
   initializeBuffers();
   gl.clearColor(1.0, 1.0, 1.0, 1.0);
