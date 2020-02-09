@@ -53,18 +53,6 @@ function getGLContext(canvas) {
      return context;
 }
 
-/** 
- * Transformations:
- * Scale
- * Rotation
- * Translation
- */
-function updateTransforms() {
-    var scale = [1.1, 1.5]
-    var translation = [100, 150]
-    var rotation = [0, 1]
-}
-
 /**
  * Set up Illini mesh, vertices, edges
  */
@@ -174,6 +162,109 @@ function generateIlliniColors() {
   return colors;
 }
 
+/**
+ * Landscape for own animation
+ */
+function generateLandscapeGeometry() {
+  // Set vertex list for landscape
+  var vertex_list = [
+    // Mountain 1
+    [-5.0, -1.0],
+    [-4.1, -0.1],
+    [-2.5, -1.0],
+    // Mountain 2
+    [-4.0, -1.0],
+    [-2.9, -0.3],
+    [-2.0, -1.0],
+    // Mountain 3
+    [-3.1, -1.0],
+    [-2.4, -0.2],
+    [-1.7, -1.0],
+    // Mountain 4
+    [-2.7, -1.0],
+    [-2.0, -0.1],
+    [-1.0, -1.0],
+    // Mountain 5
+    [-2.0, -1.0],
+    [-1.2, -0.3],
+    [-0.4, -1.0],
+    // Mountain 6
+    [-1.1, -1.0],
+    [-0.3, -0.4],
+    [0.6, -1.0],
+    // Mountain 7
+    [-0.3, -1.0],
+    [0.6, -0.15],
+    [1.4, -1.0],
+    // Ground
+    [-5.0, -0.8],
+    [1.0, -0.8],
+    [-5.0, -1.0],
+    [-5.0, -1.0],
+    [1.0, -0.8],
+    [1.0, -1.0]
+  ];
+
+  var positions = [];
+
+  for (var i = 0; i < vertex_list.length; i++) {
+    positions.push(vertex_list[i][0]);
+    positions.push(vertex_list[i][1]);
+  }
+
+  return positions;
+}
+
+function generateLandscapeColors() {
+  var landscapeColors = [
+    // Mountain 1
+    [204/255, 204/255, 204/255, 1],
+    [180/255, 180/255, 180/255, 1],
+    [204/255, 204/255, 204/255, 1],
+    // Mountain 2
+    [83/255, 130/255, 74/255, 1],
+    [83/255, 160/255, 74/255, 1],
+    [83/255, 130/255, 74/255, 1],
+    // Mountain 3
+    [170/255, 170/255, 170/255, 1],
+    [140/255, 140/255, 140/255, 1],
+    [170/255, 170/255, 170/255, 1],
+    // Mountain 4
+    [180/255, 180/255, 180/255, 1],
+    [130/255, 130/255, 130/255, 1],
+    [180/255, 180/255, 180/255, 1],
+    // Mountain 5
+    [83/255, 130/255, 74/255, 1],
+    [90/255, 170/255, 74/255, 1],
+    [83/255, 130/255, 74/255, 1],
+    // Mountain 6
+    [97/255, 179/255, 80/255, 1],
+    [110/255, 190/255, 95/255, 1],
+    [97/255, 179/255, 80/255, 1],
+    // Mountain 7
+    [170/255, 170/255, 170/255, 1],
+    [210/255, 190/255, 210/255, 1],
+    [170/255, 170/255, 170/255, 1]
+  ];
+
+  var groundColors = [26/255, 166/255, 0/255, 1];
+  var colors = [];
+  for (var i = 0; i < landscapeColors.length; i++) {
+    for (var j = 0; j < 4; j++) {
+      colors.push(landscapeColors[i][j]);
+    }
+  }
+
+  // Push ground colors
+  for (var i = 0; i < 6; i++) {
+    for (var j = 0; j < 4; j++) {
+      colors.push(groundColors[j]);
+    }
+  }
+
+  return colors;
+}
+
 function bufferGeometry(positions) {
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
@@ -188,7 +279,9 @@ function bufferColors(colors) {
 }  
 
 /**
- * Draws function with transformation factor on positions
+ * Draws Illini hopping around
+ * @param {*} positions 
+ * @param {*} colors 
  */
 function draw(positions, colors) {
   bufferGeometry(positions);
@@ -203,6 +296,33 @@ function draw(positions, colors) {
   gl.drawArrays(gl.TRIANGLES, 0, 36)
 }
 
+/**
+ * Draws moving landscape
+ * @param {*} positions 
+ * @param {*} colors 
+ */
+function draw2(positions, colors) {
+  bufferGeometry(positions);
+  bufferColors(colors);
+  glMatrix.mat4.identity(mvMatrix);
+  glMatrix.mat4.translate(mvMatrix, mvMatrix, [(t/3)%3.5, 0, 0]);
+  gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
+  gl.drawArrays(gl.TRIANGLES, 0, 27)
+}
+
+function draw3(positions, colors) {
+  bufferGeometry(positions);
+  bufferColors(colors);
+  glMatrix.mat4.identity(mvMatrix);
+  //glMatrix.mat4.translate(mvMatrix, mvMatrix, [-Math.log((t/4)%3.5 + 1.2) + 0.7, Math.log((t/4)%3.5 + 1.2) - 1.0, 0]);
+  //glMatrix.mat4.translate(mvMatrix, mvMatrix, [-(t/4)%3.5 + 0.5, (t/4)%3.5 - 1.0, 0]);
+  //glMatrix.mat4.scale(mvMatrix, mvMatrix, [-Math.log((t/4)%3.5 - 0.9), -Math.log((t/4)%3.5 - 0.9), 0.3]);
+  glMatrix.mat4.translate(mvMatrix, mvMatrix, [0, (t/6)%3.5 - 2.4, 0]);
+  glMatrix.mat4.scale(mvMatrix, mvMatrix, [Math.log((t/6)%3.5+0.4)-1.7, Math.log((t/6)%3.5+0.4)-1.7, 0.3]);
+  gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
+  console.log(t)
+  gl.drawArrays(gl.TRIANGLES, 0, 36)
+}
 /**
  * Initialize buffer for vertex position
  */
@@ -289,8 +409,12 @@ function tick() {
     animate();
   } else {
     // Own animation
-    // draw different set of meshes
+    // Set background to sky color
     gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.clearColor(84/255*(t/15 % 1.4), 204/255*(t/15 % 1.4), 249/255*(t/15 % 1.4), 1.0);
+    draw3(meshSet[0], colorSet[0]);
+    draw2(meshSet[1], colorSet[1]);
+    animate();
   }
 }
 
@@ -310,6 +434,18 @@ function lerp(Out, A, B, t) {
   Out[1] = A[1] + (B[1] - A[1])*t;
 }
 
+/** 
+ * Transformations:
+ * Scale
+ * Rotation
+ * Translation
+ */
+function updateTransforms() {
+  var scale = [1.1, 1.5]
+  var translation = [100, 150]
+  var rotation = [0, 1]
+}
+
 function animate() {
   defAngle = (defAngle + 3.0) % 360;
   t = t + 0.03;
@@ -320,8 +456,11 @@ function animate() {
 }
 
 function Meshes() {
-  meshSet.push(generateIlliniGeometry())
-  colorSet.push(generateIlliniColors())
+  meshSet.push(generateIlliniGeometry());
+  colorSet.push(generateIlliniColors());
+
+  meshSet.push(generateLandscapeGeometry());
+  colorSet.push(generateLandscapeColors());
 }
 
 /**
