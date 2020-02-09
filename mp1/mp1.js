@@ -215,6 +215,9 @@ function generateLandscapeGeometry() {
   return positions;
 }
 
+/**
+ * Generate colors for landscape
+ */
 function generateLandscapeColors() {
   var landscapeColors = [
     // Mountain 1
@@ -265,13 +268,18 @@ function generateLandscapeColors() {
   return colors;
 }
 
+/**
+ * Buffer vertices for geometry
+ * @param {Array} positions 
+ */
 function bufferGeometry(positions) {
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 }
 
 /**
- * Set up Illini colors for border and shape
+ * Buffer colors for geometry
+ * @param {Array} colors 
  */
 function bufferColors(colors) {
   gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer)
@@ -305,18 +313,20 @@ function draw2(positions, colors) {
   bufferGeometry(positions);
   bufferColors(colors);
   glMatrix.mat4.identity(mvMatrix);
-  glMatrix.mat4.translate(mvMatrix, mvMatrix, [(t/3)%3.5, 0, 0]);
+  glMatrix.mat4.translate(mvMatrix, mvMatrix, [(t/6)%3.5, 0, 0]);
   gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
   gl.drawArrays(gl.TRIANGLES, 0, 27)
 }
 
+/**
+ * Draw rising illini sun
+ * @param {*} positions 
+ * @param {*} colors 
+ */
 function draw3(positions, colors) {
   bufferGeometry(positions);
   bufferColors(colors);
   glMatrix.mat4.identity(mvMatrix);
-  //glMatrix.mat4.translate(mvMatrix, mvMatrix, [-Math.log((t/4)%3.5 + 1.2) + 0.7, Math.log((t/4)%3.5 + 1.2) - 1.0, 0]);
-  //glMatrix.mat4.translate(mvMatrix, mvMatrix, [-(t/4)%3.5 + 0.5, (t/4)%3.5 - 1.0, 0]);
-  //glMatrix.mat4.scale(mvMatrix, mvMatrix, [-Math.log((t/4)%3.5 - 0.9), -Math.log((t/4)%3.5 - 0.9), 0.3]);
   glMatrix.mat4.translate(mvMatrix, mvMatrix, [0, (t/6)%3.5 - 2.4, 0]);
   glMatrix.mat4.scale(mvMatrix, mvMatrix, [Math.log((t/6)%3.5+0.4)-1.7, Math.log((t/6)%3.5+0.4)-1.7, 0.3]);
   gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
@@ -416,34 +426,6 @@ function tick() {
     draw2(meshSet[1], colorSet[1]);
     animate();
   }
-}
-
-function bounce() {
-  // y(t) = y0 + vyt + 1/2gt^2
-}
-
-/**
- * Linear interpolation for 2D points
- * @param {*} Out 
- * @param {*} A 
- * @param {*} B 
- * @param {*} t 
- */
-function lerp(Out, A, B, t) {
-  Out[0] = A[0] + (B[0] - A[0])*t;
-  Out[1] = A[1] + (B[1] - A[1])*t;
-}
-
-/** 
- * Transformations:
- * Scale
- * Rotation
- * Translation
- */
-function updateTransforms() {
-  var scale = [1.1, 1.5]
-  var translation = [100, 150]
-  var rotation = [0, 1]
 }
 
 function animate() {
