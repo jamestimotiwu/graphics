@@ -74,6 +74,37 @@ class Terrain{
         v[1] = this.vBuffer[vid + 1];
         v[2] = this.vBuffer[vid + 2];
     }
+
+    /**
+    * Set the normal of a vertex at location(i,j)
+    * @param {Object} n an an array of length 3 holding normal
+    * @param {number} i the ith row of vertices
+    * @param {number} j the jth column of vertices
+    */
+   setNormal(n,i,j)
+   {
+       //Your code here
+       var vid = 3 * (i * (this.div + 1) + j);
+       this.nBuffer[vid] = n[0];
+       this.nBuffer[vid + 1] = n[1];
+       this.nBuffer[vid + 2] = n[2];
+   }
+
+    /**
+    * Return the x,y,z coordinates of a vertex at location (i,j)
+    * @param {Object} n an an array of length 3 holding normal
+    * @param {number} i the ith row of vertices
+    * @param {number} j the jth column of vertices
+    */
+   getNormal(n,i,j)
+   {
+       //Your code here
+       var vid = 3 * (i * (this.div + 1) + j);
+
+       n[0] = this.nBuffer[vid];
+       n[1] = this.nBuffer[vid + 1];
+       n[2] = this.nBuffer[vid + 2];
+   }
     
     /**
     * Send the buffer objects to WebGL for rendering 
@@ -163,10 +194,7 @@ generateTriangles()
     //Your code here
     var deltaX = (this.maxX - this.minX) / this.div;
     var deltaY = (this.maxY - this.minY) / this.div;
-    var scale = 0.01
 
-    var deltaZ;
-    var negative;
     // Rand height
     // Create flat map
     for (var i = 0; i <= this.div; i++) {
@@ -178,44 +206,6 @@ generateTriangles()
             this.nBuffer.push(0);
             this.nBuffer.push(0);
             this.nBuffer.push(1);
-        }
-    }
-
-    for (var i = 1; i <= this.div; i++) {
-        for (var j = 1; j <= this.div; j++) {
-            // Generate z's across the map depending on neighboring verticies
-            deltaZ = Math.random() * scale;
-            negative = Math.round(Math.random()) * 2 - 1;
-            deltaZ = deltaZ * negative;
-
-            var set_neighbor = Math.round(Math.random() * 3);
-            
-            var curr = [3];
-            this.getVertex(curr, i, j);
-            
-            var neighbor = [3];
-            // check all corners of plane
-            switch(set_neighbor) {
-                //top
-                case 0:
-                    this.getVertex(neighbor, i - 1, j);
-                    break;
-                //bottom
-                case 1:
-                    this.getVertex(neighbor, i + 1, j);
-                    break;            
-                //left
-                case 2:
-                    this.getVertex(neighbor, i, j - 1);
-                    break;
-                //right
-                case 3:
-                    this.getVertex(neighbor, i, j + 1);
-                    break;
-            }
-
-            curr[2] = neighbor[2] + deltaZ;
-            this.setVertex(curr, i, j);
         }
     }
 
@@ -232,10 +222,161 @@ generateTriangles()
         }
     }
     
+    this.generateTerrain();
+    //this.generateNormals();
     //
     this.numVertices = this.vBuffer.length/3;
     this.numFaces = this.fBuffer.length/3;
 }
+
+crossProduct(v_1, v_2) {
+    /* Given v_1, v_2 as array [x,y,z] */
+    console.log (v_2[1]);
+    var product = [v_1[1] * v_2[2] - v_1[2] * v_2[1],
+                v_1[2] * v_2[0] - v_1[0] * v_2[2],
+                v_1[0] * v_2[1] - v_1[1] * v_2[2]];
+
+    return product;
+}
+
+dotProduct(v_1, v_2) {
+    /* Given v_1, v_2, v_3 as array [x,y,z] */
+    var product = v_1[0]*v_2[0] + v_1[1]*v_2[1];
+    return product;
+}
+
+generateTerrain() {
+    var scale = 0.001
+    var deltaZ = 0.005;
+    var negative;
+    var iterations = 70;
+    /* 0. Iterate over randomly generated planes follow below */
+    for (var o = 0; o <= iterations; o++) {
+        /* 1. Choose random point within maxX and minX */
+        var random_x = this.minX + Math.random()*(this.maxX - this.minX);
+        var random_y = this.minY + Math.random()*(this.maxY - this.minY);
+
+        /* 2. Generate random normal vector n for the plane <X_n, Y_n, 0> */
+        var random_x_n = Math.random() - 0.5;
+        var random_y_n = Math.random() - 0.5;
+        //var random_x_n = Math.cos(Math.random() * (Math.PI * 2));
+        //var random_y_n = Math.sin(Math.random() * (Math.PI * 2));
+
+        for (var i = 0; i <= this.div; i++) {
+            for (var j = 0; j <= this.div; j++) {
+                /* 3. Given vertex b, test which side of plane that vertex falls on using dot product test*/
+
+                var curr = [3];
+                this.getVertex(curr, i, j);
+
+                /* 4. Dot product test: (b-p) * n > 0 s.t. b is the current vertex, p is the random point*/
+                var side = [curr[0] - random_x, curr[1] - random_y, 0];
+                var dot_p = this.dotProduct(side, [random_x_n, random_y_n, 0]);
+
+                if (dot_p > 0) {
+                    curr[2] += deltaZ;
+                } else {
+                    curr[2] -= deltaZ;
+                }
+
+                this.setVertex(curr, i, j);
+            }
+        }
+    }
+}
+
+generateNormals() {
+    /* Iterate over grid */
+    for (var i = 0; i <= this.div; i++) {
+        for (var j = 0; j <= this.div; j++) {
+            /* Get vertices from every triangle (upper) */
+            var v_1 = [3];
+            var v_2 = [3];
+            var v_3 = [3];
+            var product = [3];
+
+            /* Upper triangle face */
+            this.getVertex(v_1, i, j);
+            this.getVertex(v_2, i, j + 1);
+            this.getVertex(v_3, i + 1, j + 1);
+
+            /* (v2 - v1) x (v3 - v1) */
+            product = this.crossProduct([v_2[0] - v_1[0], v_2[1] - v_1[1], v_2[2] - v_1[2]], [v_3[0] - v_1[0], v_3[1] - v_1[1], v_3[2] - v_1[2]]);
+
+            var n_1 = [3];
+            var n_2 = [3];
+            var n_3 = [3];
+
+            this.getNormal(n_1, i, j);
+            this.getNormal(n_2, i, j + 1);
+            this.getNormal(n_3, i + 1, j + 1);
+
+            /* Update normals with calculated normal */
+            n_1[0] += product[0];
+            n_2[0] += product[0];
+            n_3[0] += product[0];
+
+            n_1[1] += product[1];
+            n_2[1] += product[1];
+            n_3[1] += product[1];
+
+            n_1[2] += product[2];
+            n_2[2] += product[2];
+            n_3[2] += product[2];
+
+            /* Set normals to normal buffer nBuffer */
+            this.setNormal(n_1, i, j);
+            this.setNormal(n_2, i, j + 1);
+            this.setNormal(n_3, i + 1, j + 1);
+
+            /* Lower triangle face */
+            this.getVertex(v_1, i, j);
+            this.getVertex(v_2, i + 1, j);
+            this.getVertex(v_3, i + 1, j + 1);
+
+            /* (v2 - v1) x (v3 - v1) */
+            product = this.crossProduct([v_2[0] - v_1[0], v_2[1] - v_1[1], v_2[2] - v_1[2]], [v_3[0] - v_1[0], v_3[1] - v_1[1], v_3[2] - v_1[2]]);
+
+            this.getNormal(n_1, i, j);
+            this.getNormal(n_2, i + 1, j);
+            this.getNormal(n_3, i + 1, j + 1);
+
+            /* Update normals with calculated normal */
+            n_1[0] += product[0];
+            n_2[0] += product[0];
+            n_3[0] += product[0];
+
+            n_1[1] += product[1];
+            n_2[1] += product[1];
+            n_3[1] += product[1];
+
+            n_1[2] += product[2];
+            n_2[2] += product[2];
+            n_3[2] += product[2];
+
+            /* Set normals to normal buffer nBuffer */
+            this.setNormal(n_1, i, j);
+            this.setNormal(n_2, i + 1, j);
+            this.setNormal(n_3, i + 1, j + 1);
+
+        }
+    }
+
+    /* Normalize all normals in nBuffer */
+    for (var i = 0; i <= this.div; i++) {
+        for (var j = 0; j <= this.div; j++) {
+            var n_1 = [3];
+            var n_normalized = [3];
+            this.getNormal(n_1, i, j);
+            var normalize = Math.sqrt(n_1[0]*n_1[0] + n_1[1]*n_1[1] + n_2[2]*n_2[2]);
+            n_normalized[0] = n_1[0]/normalize;
+            n_normalized[1] = n_1[1]/normalize;
+            n_normalized[2] = n_1[2]/normalize;
+            this.setNormal(n_normalized, i, j);
+        }
+    }
+}
+
 
 /**
  * Print vertices and triangles to console for debugging
