@@ -125,8 +125,6 @@ function generateTerrain(div, minX, maxX, minY, maxY) {
         let randomY = minY + Math.random()*(maxY - minY);
 
         /* 2. Generate random normal vector n for the plane <X_n, Y_n, 0> */
-        //var random_x_n = Math.random() - 0.5;
-        //var random_y_n = Math.random() - 0.5;
         let randomX_n = Math.cos(Math.random() * (Math.PI * 2));
         let randomY_n = Math.sin(Math.random() * (Math.PI * 2));
 
@@ -135,7 +133,7 @@ function generateTerrain(div, minX, maxX, minY, maxY) {
                 /* 3. Given vertex b, test which side of plane that vertex falls on using dot product test*/
 
                 let curr = [0, 0, 0];
-                getVertex(curr, i, j);
+                getVertex(curr, i, j); 
 
                 /* 4. Dot product test: (b-p) * n > 0 s.t. b is the current vertex, p is the random point*/
                 let side = vec3.fromValues(curr[0] - randomX, curr[1] - randomY, 0);
@@ -153,8 +151,94 @@ function generateTerrain(div, minX, maxX, minY, maxY) {
     }
 }
 
-function generateNormals() {
+function generateNormals(div, minX, maxX, minY, maxY) {
+    /* Iterate over grid */
+    for (var i = 0; i < this.div; i++) {
+        for (var j = 0; j < this.div; j++) {
+            /* Get vertices from every triangle (upper) */
+            /* Upper triangle face */
+            let v_1 = getVertex(i, j);
+            let v_2 = getVertex(i, j + 1);
+            let v_3 = getVertex(i + 1, j + 1);
+            let product = vec3.create();
 
+            /* (v2 - v1) x (v3 - v1) */
+            vec3.cross(product,
+                        vec3.fromValues(v_2[0] - v_1[0],
+                             v_2[1] - v_1[1], 
+                             v_2[2] - v_1[2]),
+                        vec3.fromValues(v_3[0] - v_1[0], 
+                            v_3[1] - v_1[1], 
+                            v_3[2] - v_1[2]));
+
+            let n_1 = getNormal(i, j);
+            let n_2 = getNormal(i, j + 1);
+            let n_3 = getNormal(i + 1, j);
+
+            /* Update normals with calculated normal */
+            n_1[0] += product[0];
+            n_2[0] += product[0];
+            n_3[0] += product[0];
+
+            n_1[1] += product[1];
+            n_2[1] += product[1];
+            n_3[1] += product[1];
+
+            n_1[2] += product[2];
+            n_2[2] += product[2];
+            n_3[2] += product[2];
+
+            /* Set normals to normal buffer nBuffer */
+            setNormal(n_1, i, j);
+            setNormal(n_2, i, j + 1);
+            setNormal(n_3, i + 1, j);
+
+            /* Lower triangle face */
+            v_1 = getVertex(v_1, i, j + 1);
+            v_2 = getVertex(v_2, i + 1, j + 1);
+            v_3 = getVertex(v_3, i, j + 1);
+
+            /* (v2 - v1) x (v3 - v1) */
+            vec3.cross(product, 
+                       vec3.fromValues(v_2[0] - v_1[0],
+                                   v_2[1] - v_1[1], 
+                                   v_2[2] - v_1[2]),
+                       vec3.fromValues(v_3[0] - v_1[0], 
+                                   v_3[1] - v_1[1], 
+                                   v_3[2] - v_1[2]));
+            
+            n_1 = getNormal(n_1, i, j + 1);
+            n_2 = getNormal(n_2, i + 1, j + 1);
+            n_3 = getNormal(n_3, i, j + 1);
+
+            /* Update normals with calculated normal */
+            n_1[0] += product[0];
+            n_2[0] += product[0];
+            n_3[0] += product[0];
+
+            n_1[1] += product[1];
+            n_2[1] += product[1];
+            n_3[1] += product[1];
+
+            n_1[2] += product[2];
+            n_2[2] += product[2];
+            n_3[2] += product[2];
+
+            /* Set normals to normal buffer nBuffer */
+            setNormal(n_1, i, j + 1);
+            setNormal(n_2, i + 1, j + 1);
+            setNormal(n_3, i, j + 1);
+        }
+    }
+
+    /* Normalize all normals in nBuffer */
+    for (var i = 0; i <= this.div; i++) {
+        for (var j = 0; j <= this.div; j++) {
+            getNormal(n_1, i, j);
+            vec3.normalize(n_1, n_1);
+            setNormal(n_1, i, j);
+        }
+    }
 }
 
 function initializeTerrain() {
