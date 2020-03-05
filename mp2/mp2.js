@@ -13,17 +13,11 @@ var shaderProgram;
 /** @global Position buffer */
 var positionBuffer;
 
-/** @global Color buffer */
-var colorBuffer;
-
 /** Meshing globals */
 /** @global Mesh position vertex set
  *  Indexes are mapped to same color index
 */
 var meshSet = []
-
-/** @global Color vertex set*/
-var colorSet = []
 
 /** Transformation globals */
 /** @global Modelview matrix*/
@@ -62,27 +56,6 @@ function getGLContext(canvas) {
 function bufferGeometry(positions) {
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
-}
-
-/**
- * Buffer colors for geometry
- * @param {Array} colors 
- */
-function bufferColors(colors) {
-  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer)
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
-}  
-
-/**
- * Draws moving landscape
- * @param {Array} positions 
- * @param {Array} colors 
- */
-function draw2(positions, colors) {
-  bufferGeometry(positions);
-  bufferColors(colors);
-  gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
-  gl.drawArrays(gl.TRIANGLES, 0, 27)
 }
 
 /**
@@ -181,7 +154,8 @@ function startup() {
    */
   var canvas = document.getElementById("mp1GLCanvas")
   gl = getGLContext(canvas)
-  initializeMeshes();
+  //initializeMeshes();
+  initializeTerrain();
   initializeShaderProgram();
   initializeBuffers();
   gl.clearColor(1.0, 1.0, 1.0, 1.0);

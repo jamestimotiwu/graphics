@@ -73,6 +73,12 @@ function generatePlane(div, minX, maxX, minY, maxY) {
     numFaces = triangleBuffer.length/3;
 }
 
+/**
+ * 
+ * @param {*} v 
+ * @param {*} i 
+ * @param {*} j 
+ */
 function setVertex(v, i, j) {
     let divAddr = 3 * (i * (div + 1) + j);
     
@@ -82,6 +88,11 @@ function setVertex(v, i, j) {
     vertexBuffer[divAddr + 2] = v[2];
 }
 
+/**
+ * 
+ * @param {*} i 
+ * @param {*} j 
+ */
 function getVertex(i, j) {
     let divAddr = 3 * (i * (div + 1) + j);
     let v = [0, 0, 0]
@@ -94,6 +105,12 @@ function getVertex(i, j) {
     return v;
 }
 
+/**
+ * 
+ * @param {*} n 
+ * @param {*} i 
+ * @param {*} j 
+ */
 function setNormal(n, i, j) {
     let divAddr = 3 * (i * (div + 1) + j);
     
@@ -103,6 +120,11 @@ function setNormal(n, i, j) {
     normalBuffer[divAddr + 2] = n[2];
 }
 
+/**
+ * 
+ * @param {*} i 
+ * @param {*} j 
+ */
 function getNormal(i, j) {
     let divAddr = 3 * (i * (div + 1) + j);
     let v = [0, 0, 0]
@@ -115,6 +137,14 @@ function getNormal(i, j) {
     return v;    
 }
 
+/**
+ * 
+ * @param {*} div 
+ * @param {*} minX 
+ * @param {*} maxX 
+ * @param {*} minY 
+ * @param {*} maxY 
+ */
 function generateTerrain(div, minX, maxX, minY, maxY) {
     let deltaZ = 0.005;
     let iterations = 60;
@@ -151,6 +181,14 @@ function generateTerrain(div, minX, maxX, minY, maxY) {
     }
 }
 
+/**
+ * 
+ * @param {*} div 
+ * @param {*} minX 
+ * @param {*} maxX 
+ * @param {*} minY 
+ * @param {*} maxY 
+ */
 function generateNormals(div, minX, maxX, minY, maxY) {
     /* Iterate over grid */
     for (var i = 0; i < this.div; i++) {
@@ -241,7 +279,18 @@ function generateNormals(div, minX, maxX, minY, maxY) {
     }
 }
 
+/**
+ * 
+ */
 function initializeTerrain() {
+    let div = 64;
+    let minX = -0.5;
+    let minY = -0.5;
+    let maxX = 0.5;
+    let maxY = 0.5;
 
+    generatePlane(div, minX, maxX, minY, maxY);
+    generateTerrain(div, minX, maxX, minY, maxY);
+    generateNormals(div, minX, maxX, minY, maxY);
 }
 
