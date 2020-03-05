@@ -231,36 +231,36 @@ generateTriangles()
     this.numFaces = this.fBuffer.length/3;
 }
 
-// crossProduct(v_1, v_2) {
-//     /* Given v_1, v_2 as array [x,y,z] */
+crossProduct(v_1, v_2) {
+    /* Given v_1, v_2 as array [x,y,z] */
 
-//     var product = [v_1[1] * v_2[2] - v_1[2] * v_2[1],
-//                 v_1[2] * v_2[0] - v_1[0] * v_2[2],
-//                 v_1[0] * v_2[1] - v_1[1] * v_2[2]];
+    var product = [v_1[1] * v_2[2] - v_1[2] * v_2[1],
+                v_1[2] * v_2[0] - v_1[0] * v_2[2],
+                v_1[0] * v_2[1] - v_1[1] * v_2[2]];
 
-//     return product;
-// }
-
-crossProduct(v1,v2,v3)
-{
-  var bigN = [0.0,0.0,0.0];
-  var vecA = [0.0,0.0,0.0];
-  var vecB = [0.0,0.0,0.0];
-
-  vecA[0] = v2[0]-v1[0];
-  vecA[1] = v2[1]-v1[1];
-  vecA[2] = v2[2]-v1[2];
-
-  vecB[0] = v3[0]-v1[0];
-  vecB[1] = v3[1]-v1[1];
-  vecB[2] = v3[2]-v1[2];
-
-  bigN[0] = vecA[1]*vecB[2]-vecA[2]*vecB[1];
-  bigN[1] = vecA[2]*vecB[0]-vecA[0]*vecB[2];
-  bigN[2] = vecA[0]*vecB[1]-vecA[1]*vecB[0];
-
-  return bigN;
+    return product;
 }
+
+// crossProduct(v1,v2,v3)
+// {
+//   var bigN = [0.0,0.0,0.0];
+//   var vecA = [0.0,0.0,0.0];
+//   var vecB = [0.0,0.0,0.0];
+
+//   vecA[0] = v2[0]-v1[0];
+//   vecA[1] = v2[1]-v1[1];
+//   vecA[2] = v2[2]-v1[2];
+
+//   vecB[0] = v3[0]-v1[0];
+//   vecB[1] = v3[1]-v1[1];
+//   vecB[2] = v3[2]-v1[2];
+
+//   bigN[0] = vecA[1]*vecB[2]-vecA[2]*vecB[1];
+//   bigN[1] = vecA[2]*vecB[0]-vecA[0]*vecB[2];
+//   bigN[2] = vecA[0]*vecB[1]-vecA[1]*vecB[0];
+
+//   return bigN;
+// }
 
 dotProduct(v_1, v_2) {
     /* Given v_1, v_2, v_3 as array [x,y,z] */
@@ -270,7 +270,7 @@ dotProduct(v_1, v_2) {
 
 generateTerrain() {
     var deltaZ = 0.005;
-    var iterations = 70;
+    var iterations = 60;
     /* 0. Iterate over randomly generated planes follow below */
     for (var o = 0; o <= iterations; o++) {
         /* 1. Choose random point within maxX and minX */
@@ -306,18 +306,6 @@ generateTerrain() {
     }
 }
 
-normalize(v)
-{
-  let magnitude = v[0]*v[0] + v[1]*v[1] + v[2]*v[2];
-  magnitude = Math.sqrt(magnitude);
-
-  v[0] = v[0]/magnitude;
-  v[1] = v[1]/magnitude;
-  v[2] = v[2]/magnitude;
-
-  return v;
-}
-
 generateNormals() {
     /* Iterate over grid */
     for (var i = 0; i < this.div; i++) {
@@ -334,13 +322,13 @@ generateNormals() {
             this.getVertex(v_3, i + 1, j + 1);
 
             /* (v2 - v1) x (v3 - v1) */
-            // product = this.crossProduct([v_2[0] - v_1[0],
-            //                              v_2[1] - v_1[1], 
-            //                              v_2[2] - v_1[2]],
-            //                             [v_3[0] - v_1[0], 
-            //                             v_3[1] - v_1[1], 
-            //                             v_3[2] - v_1[2]]);
-            let product = this.crossProduct(v_1, v_2, v_3);
+            var product = this.crossProduct([v_2[0] - v_1[0],
+                                         v_2[1] - v_1[1], 
+                                         v_2[2] - v_1[2]],
+                                        [v_3[0] - v_1[0], 
+                                        v_3[1] - v_1[1], 
+                                        v_3[2] - v_1[2]]);
+
             var n_1 = [0,0,0];
             var n_2 = [0,0,0];
             var n_3 = [0,0,0];
@@ -373,9 +361,13 @@ generateNormals() {
             this.getVertex(v_3, i, j + 1);
 
             /* (v2 - v1) x (v3 - v1) */
-            // product = this.crossProduct([v_2[0] - v_1[0], v_2[1] - v_1[1], v_2[2] - v_1[2]],
-            //     [v_3[0] - v_1[0], v_3[1] - v_1[1], v_3[2] - v_1[2]]);
-            product = this.crossProduct(v_1, v_2, v_3);
+            product = this.crossProduct([v_2[0] - v_1[0],
+                                        v_2[1] - v_1[1], 
+                                        v_2[2] - v_1[2]],
+                                       [v_3[0] - v_1[0], 
+                                       v_3[1] - v_1[1], 
+                                       v_3[2] - v_1[2]]);
+            
             this.getNormal(n_1, i, j + 1);
             this.getNormal(n_2, i + 1, j + 1);
             this.getNormal(n_3, i, j + 1);
@@ -400,97 +392,22 @@ generateNormals() {
 
         }
     }
-//   for(var i=0; i<this.div; i++) {
-//     for(var j=0; j<this.div; j++) {
-//       let n = [0,0,0];
-//       this.getNormal(n,i,j);
-//       n = this.normalize(n);
-//       this.setNormal(n,i,j)
-//     }
-//   }
+
     /* Normalize all normals in nBuffer */
     for (var i = 0; i <= this.div; i++) {
         for (var j = 0; j <= this.div; j++) {
-            var n_1 = [];
-            var n_normalized = [3];
+            var n_1 = [0,0,0];
             this.getNormal(n_1, i, j);
+            //var normalize = this.normalize(n_1);
+            var norm = Math.sqrt(n_1[0]*n_1[0] + n_1[1]*n_1[1] + n_1[2]*n_1[2]);
 
-            var normalize = Math.sqrt(n_1[0]*n_1[0] + n_1[1]*n_1[1] + n_2[2]*n_2[2]);
-
-            n_normalized[0] = n_1[0]/normalize;
-            n_normalized[1] = n_1[1]/normalize;
-            n_normalized[2] = n_1[2]/normalize;
-            this.setNormal(n_normalized, i, j);
+            n_1[0] = n_1[0]/norm;
+            n_1[1] = n_1[1]/norm;
+            n_1[2] = n_1[2]/norm;
+            this.setNormal(n_1, i, j);
         }
     }
 }
-
-updateTerrainNormals()
-{
-  for(var i=0; i<this.div; i++) {
-    for(var j=0; j<this.div; j++) {
-      let n = [0,0,0];
-      this.setNormal(n,i,j);
-    }
-  }
-
-  for(var i=0; i<this.div; i++) {
-    for(var j=0; j<this.div; j++) {
-      let v1 = [0,0,0];
-      let v2 = [0,0,0];
-      let v3 = [0,0,0];
-
-      let n1 = [0,0,0];
-      let n2 = [0,0,0];
-      let n3 = [0,0,0];
-
-      // iterate through each triangle face
-      this.getVertex(v1,i,j);
-      this.getVertex(v2,i,j+1);
-      this.getVertex(v3,i+1,j);
-      this.getNormal(n1,i,j);
-      this.getNormal(n2,i,j+1);
-      this.getNormal(n3,i+1,j);
-
-      let bigN = this.crossProduct(v1, v2, v3);
-      n1[0] += bigN[0];n1[1] += bigN[1];n1[2] += bigN[2];
-      n2[0] += bigN[0];n2[1] += bigN[1];n2[2] += bigN[2];
-      n3[0] += bigN[0];n3[1] += bigN[1];n3[2] += bigN[2];
-
-      this.setNormal(n1,i,j);
-      this.setNormal(n2,i,j+1);
-      this.setNormal(n3,i+1,j);
-
-      // iterate through each triangle face
-      this.getVertex(v1,i,j+1);
-      this.getVertex(v2,i+1,j+1);
-      this.getVertex(v3,i,j+1);
-      this.getNormal(n1,i,j+1);
-      this.getNormal(n2,i+1,j+1);
-      this.getNormal(n3,i,j+1);
-
-      bigN = this.crossProduct(v1, v2, v3);
-      n1[0] += bigN[0];n1[1] += bigN[1];n1[2] += bigN[2];
-      n2[0] += bigN[0];n2[1] += bigN[1];n2[2] += bigN[2];
-      n3[0] += bigN[0];n3[1] += bigN[1];n3[2] += bigN[2];
-
-      this.setNormal(n1,i,j+1);
-      this.setNormal(n2,i+1,j+1);
-      this.setNormal(n3,i,j+1);
-    }
-  }
-
-  for(var i=0; i<this.div; i++) {
-    for(var j=0; j<this.div; j++) {
-      let n = [0,0,0];
-      this.getNormal(n,i,j);
-      n = this.normalize(n);
-      this.setNormal(n,i,j)
-    }
-  }
-}
-
-
 
 /**
  * Print vertices and triangles to console for debugging
