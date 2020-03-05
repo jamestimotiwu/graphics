@@ -32,7 +32,9 @@ var mvMatrix = glMatrix.mat4.create();
 /** @global Angle of rotation */
 var defAngle = 0;
 
+/** @global Elapsed tick */
 var t = 0; 
+
 /**
  * Get WebGL context for canvas
  * @param {element} canvas canvas
@@ -54,9 +56,11 @@ function getGLContext(canvas) {
 }
 
 /**
- * Set up Illini mesh, vertices, edges
+ * Set up Illini geometry given offset for base as legs 
+ * @param {FLOAT} base_l_offset 
+ * @param {FLOAT} base_r_offset 
  */
-function generateIlliniGeometry() {
+function generateIlliniGeometry(base_l_offset, base_r_offset) {
     /**
      * Set up adjustable offsets for the middle rectangle in the I figure
      */
@@ -86,8 +90,8 @@ function generateIlliniGeometry() {
       // Bottom base rectangle
       [-translated_base_w, -translated_column_h + base_height],
       [translated_base_w, -translated_column_h + base_height],
-      [-translated_base_w, -translated_column_h],
-      [translated_base_w, -translated_column_h]
+      [-translated_base_w, -translated_column_h + base_l_offset],
+      [translated_base_w, -translated_column_h + base_r_offset]
     ]
 
     var vertex_list_border = [
@@ -104,8 +108,8 @@ function generateIlliniGeometry() {
       // Bottom base rectangle
       [-translated_base_w-border_size, -translated_column_h + base_height + border_size],
       [translated_base_w+border_size, -translated_column_h + base_height + border_size],
-      [-translated_base_w-border_size, -translated_column_h - border_size],
-      [translated_base_w+border_size, -translated_column_h - border_size]
+      [-translated_base_w-border_size, -translated_column_h - border_size + base_l_offset],
+      [translated_base_w+border_size, -translated_column_h - border_size + base_r_offset]
     ]
 
     var triangles = [
@@ -139,6 +143,9 @@ function generateIlliniGeometry() {
     return positions;
 }
 
+/**
+ * Assign colors to vertex positions for Illini
+ */
 function generateIlliniColors() {
   var colorBorder = [0.07, 0.16, 0.295, 1]
   var colorShape = [0.909, 0.29, 0.15, 1]
@@ -216,7 +223,7 @@ function generateLandscapeGeometry() {
 }
 
 /**
- * Generate colors for landscape
+ * Assign colors to vertex positions for landscape
  */
 function generateLandscapeColors() {
   var landscapeColors = [
@@ -288,15 +295,18 @@ function bufferColors(colors) {
 
 /**
  * Draws Illini hopping around
- * @param {*} positions 
- * @param {*} colors 
+ * @param {Array} positions 
+ * @param {Array} colors 
  */
 function draw(positions, colors) {
+  // Refresh offset on positions
+  left = (Math.sin(12*t)/15);
+  right = (Math.cos(12*t)/15);
+  positions = updatePositions();
   bufferGeometry(positions);
   bufferColors(colors);
   // Create transformation, use handle to send to shader
   glMatrix.mat4.identity(mvMatrix);
-  //glMatrix.mat4.rotateX(mvMatrix, mvMatrix, defAngle * Math.PI / 180)
   glMatrix.mat4.translate(mvMatrix, mvMatrix, [(t % Math.PI) - 1.5, Math.sin(6*t)/(1.2+(t % Math.PI)/1.5), 0.4]);
   glMatrix.mat4.scale(mvMatrix, mvMatrix, [0.3, Math.sin(6*t)/8.0 + 0.3, 0.3]);
 
@@ -305,9 +315,18 @@ function draw(positions, colors) {
 }
 
 /**
+ * Updates buffer directly for vertex buffer
+ */
+function updatePositions() {
+  left = (Math.sin(t)/15);
+  right = (Math.cos(t)/15);
+  return generateIlliniGeometry(left, right)
+}
+
+/**
  * Draws moving landscape
- * @param {*} positions 
- * @param {*} colors 
+ * @param {Array} positions 
+ * @param {Array} colors 
  */
 function draw2(positions, colors) {
   bufferGeometry(positions);
@@ -320,8 +339,8 @@ function draw2(positions, colors) {
 
 /**
  * Draw rising illini sun
- * @param {*} positions 
- * @param {*} colors 
+ * @param {Array} positions 
+ * @param {Array} colors 
  */
 function draw3(positions, colors) {
   bufferGeometry(positions);
@@ -389,7 +408,7 @@ function initializeShaderProgram() {
 /**
  * Initialize shaders
  * @param {string} id document id of vertex/fragment shader to load from DOM
- * @param {*} type fragment or vertex(gl.VERTEX_SHADER, gl.FRAGMENT_SHADER)
+ * @param {element} type fragment or vertex(gl.VERTEX_SHADER, gl.FRAGMENT_SHADER)
  */
 function initializeShader(id, type) {
   var shaderSource = document.getElementById(id).text;
@@ -415,7 +434,7 @@ function tick() {
   if (document.getElementById('r1').checked) {
     // Illini Animation
     // meshSet[0], colorSet[0] store Illni mesh and colors
-    draw(meshSet[0], colorSet[0]);
+    draw(generateIlliniGeometry(0,0), colorSet[0]);
     animate();
   } else {
     // Own animation
@@ -428,17 +447,19 @@ function tick() {
   }
 }
 
+/**
+ * Updates values based on tick
+ */
 function animate() {
   defAngle = (defAngle + 3.0) % 360;
   t = t + 0.03;
-  // Elapsed time is useful, basing transformation on elapsedTime instead of frame count
-  // framerates may vary
-  // Interpolation, key frames (artist generated geometry)
-  // Interpolation: calculated intermediate frames
 }
 
-function Meshes() {
-  meshSet.push(generateIlliniGeometry());
+/**
+ * Loads meshes for animation
+ */
+function initializeMeshes() {
+  meshSet.push(generateIlliniGeometry(0,0));
   colorSet.push(generateIlliniColors());
 
   meshSet.push(generateLandscapeGeometry());
@@ -457,7 +478,7 @@ function startup() {
    */
   var canvas = document.getElementById("mp1GLCanvas")
   gl = getGLContext(canvas)
-  Meshes();
+  initializeMeshes();
   initializeShaderProgram();
   initializeBuffers();
   gl.clearColor(1.0, 1.0, 1.0, 1.0);
