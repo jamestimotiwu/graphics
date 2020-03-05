@@ -24,9 +24,23 @@
     uniform vec3 uKSpecular;
     uniform float uShininess;
     
+    varying vec3 uDiffuse;
     varying vec4 vColor;
 
     void main(void) {
+    float threshold1 = 0.0;
+    float threshold2 = 0.1;
+    float threshold3 = 0.2;
+
+    if(aVertexPosition.z <= threshold1) {
+        uDiffuse = vec3(0.0, 0.0, 255.0/255.0);
+    } else if (aVertexPosition.z > threshold1 && aVertexPosition.z <= threshold2) {
+        uDiffuse = vec3(0.0, 255.0/255.0, 0.0);
+    } else if (aVertexPosition.z > threshold2 && aVertexPosition.z <= threshold3) {
+        uDiffuse = vec3(0.0, 255.0/255.0, 0.0);
+    } else {
+        uDiffuse = vec3(128.0/255.0, 128.0/255.0, 128.0/255.0);
+    }
     
     // Get the vertex position in eye coordinates
     vec4 vertexPositionEye4 = uMVMatrix * vec4(aVertexPosition, 1.0);
@@ -62,7 +76,7 @@
 
     // Sum up all three reflection components and send to the fragment shader
     vColor = vec4(((uAmbientLightColor*uKAmbient)
-                + (uDiffuseLightColor*uKDiffuse) * diffuseLightWeightning
+                + (uDiffuseLightColor*uDiffuse) * diffuseLightWeightning
                 + ((uSpecularLightColor*uKSpecular) * specularLightWeightning)),1.0);
     gl_Position = uPMatrix*uMVMatrix*vec4(aVertexPosition, 1.0);
     }
