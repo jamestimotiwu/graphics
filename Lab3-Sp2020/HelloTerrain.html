@@ -53,8 +53,12 @@
     vec3 viewVectorEye = -normalize(vertexPositionEye3);
     
     float rdotv = max(dot(reflectionVector, viewVectorEye), 0.0);
+
+    // Use halfway vector for Blinn Phong
+    vec3 halfwayVector = normalize(vectorToLightSource + viewVectorEye);
+    float hdotv = max(dot(halfwayVector, vectorToLightSource), 0.0);
     
-    float specularLightWeightning = pow(rdotv, uShininess);
+    float specularLightWeightning = pow(hdotv, uShininess);
 
     // Sum up all three reflection components and send to the fragment shader
     vColor = vec4(((uAmbientLightColor*uKAmbient)
