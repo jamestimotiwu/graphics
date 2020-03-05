@@ -163,44 +163,50 @@ generateTriangles()
     //Your code here
     var deltaX = (this.maxX - this.minX) / this.div;
     var deltaY = (this.maxY - this.minY) / this.div;
-    var scale = 0.005
+    var scale = 0.015
 
     var deltaZ;
     var negative;
     // Rand height
-
+    // Create flat map
     for (var i = 0; i <= this.div; i++) {
         for (var j = 0; j <= this.div; j++) {
-            if (this.vBuffer.length == 0) {
-                this.vBuffer.push(this.minX + deltaX * j);
-                this.vBuffer.push(this.minY + deltaY * i);
-                this.vBuffer.push(0);
-            } else {
-                deltaZ = Math.random() * scale;
-                negative = Math.round(Math.random()) * 2 - 1;
-                deltaZ = deltaZ * negative;
-                // check all corners of plane
-                //top
-                var top = [3];
-                this.getVertex(top, i - 1, j);
-                //bottom
-                var bottom = [3];
-                this.getVertex(bottom, i + 1, j);            
-                //left
-                var left = [3];
-                this.getVertex(left, i, j - 1);
-                //right
-                var right = [3];
-                this.getVertex(right, i, j + 1);
-
-                this.vBuffer.push(this.minX + deltaX * j);
-                this.vBuffer.push(this.minY + deltaY * i);
-                this.vBuffer.push(left[2] + deltaZ);
-            }
+            this.vBuffer.push(this.minX + deltaX * j);
+            this.vBuffer.push(this.minY + deltaY * i);
+            this.vBuffer.push(0);
 
             this.nBuffer.push(0);
             this.nBuffer.push(0);
             this.nBuffer.push(1);
+        }
+    }
+
+    for (var i = 1; i <= this.div; i++) {
+        for (var j = 1; j <= this.div; j++) {
+            // Generate z's across the map depending on neighboring verticies
+            deltaZ = Math.random() * scale;
+            negative = Math.round(Math.random()) * 2 - 1;
+            deltaZ = deltaZ * negative;
+            
+            var curr = [3];
+            this.getVertex(curr, i, j);
+
+            // check all corners of plane
+            //top
+            var top = [3];
+            this.getVertex(top, i - 1, j);
+            //bottom
+            var bottom = [3];
+            this.getVertex(bottom, i + 1, j);            
+            //left
+            var left = [3];
+            this.getVertex(left, i, j - 1);
+            //right
+            var right = [3];
+            this.getVertex(right, i, j + 1);
+
+            curr[2] = left[2] + deltaZ;
+            this.setVertex(curr, i, j);
         }
     }
 
