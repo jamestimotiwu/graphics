@@ -28,9 +28,9 @@
     varying vec4 vColor;
 
     void main(void) {
-    float threshold1 = 0.0;
-    float threshold2 = 0.1;
-    float threshold3 = 0.2;
+    float threshold1 = -0.02;
+    float threshold2 = 0.02;
+    float threshold3 = 0.04;
 
     if(aVertexPosition.z <= threshold1) {
         uDiffuse = vec3(0.0, 0.0, 255.0/255.0);
@@ -72,7 +72,7 @@
     vec3 halfwayVector = normalize(vectorToLightSource + viewVectorEye);
     float hdotv = max(dot(halfwayVector, vectorToLightSource), 0.0);
     
-    float specularLightWeightning = pow(hdotv, uShininess);
+    float specularLightWeightning = pow(rdotv, uShininess);
 
     // Sum up all three reflection components and send to the fragment shader
     vColor = vec4(((uAmbientLightColor*uKAmbient)
