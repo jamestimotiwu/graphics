@@ -163,7 +163,7 @@ generateTriangles()
     //Your code here
     var deltaX = (this.maxX - this.minX) / this.div;
     var deltaY = (this.maxY - this.minY) / this.div;
-    var scale = 0.015
+    var scale = 0.01
 
     var deltaZ;
     var negative;
@@ -187,25 +187,34 @@ generateTriangles()
             deltaZ = Math.random() * scale;
             negative = Math.round(Math.random()) * 2 - 1;
             deltaZ = deltaZ * negative;
+
+            var set_neighbor = Math.round(Math.random() * 3);
             
             var curr = [3];
             this.getVertex(curr, i, j);
-
+            
+            var neighbor = [3];
             // check all corners of plane
-            //top
-            var top = [3];
-            this.getVertex(top, i - 1, j);
-            //bottom
-            var bottom = [3];
-            this.getVertex(bottom, i + 1, j);            
-            //left
-            var left = [3];
-            this.getVertex(left, i, j - 1);
-            //right
-            var right = [3];
-            this.getVertex(right, i, j + 1);
+            switch(set_neighbor) {
+                //top
+                case 0:
+                    this.getVertex(neighbor, i - 1, j);
+                    break;
+                //bottom
+                case 1:
+                    this.getVertex(neighbor, i + 1, j);
+                    break;            
+                //left
+                case 2:
+                    this.getVertex(neighbor, i, j - 1);
+                    break;
+                //right
+                case 3:
+                    this.getVertex(neighbor, i, j + 1);
+                    break;
+            }
 
-            curr[2] = left[2] + deltaZ;
+            curr[2] = neighbor[2] + deltaZ;
             this.setVertex(curr, i, j);
         }
     }
