@@ -116,7 +116,10 @@ function draw(vertexBuffer) {
   mat4.rotateY(mvMatrix, mvMatrix, degToRad(viewRot));
   mat4.rotateX(mvMatrix, mvMatrix, degToRad(-75));
 
-  bufferTerrain();
+  setLightUniforms(lightPosition,lAmbient,lDiffuse,lSpecular);
+  setMaterialUniforms(shininess,kAmbient,kTerrainDiffuse,kSpecular);
+
+  //drawTerrain();
 }
 
 function setShaderModelView() {
