@@ -335,28 +335,41 @@ function initializeTerrainBuffers() {
     gl.STATIC_DRAW);
     triangleBufferProgram.itemSize = 1;
     triangleBufferProgram.numItems = triangleBuffer.length;
+}
 
-    gl.attachShader(shaderProgram, vertexBufferProgram)
+function drawTerrain() {
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBufferProgram);
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, vertexBufferProgram.itemSize, 
+                     gl.FLOAT, false, 0, 0);
+    // Bind normal buffer
+    gl.bindBuffer(gl.ARRAY_BUFFER, normalBufferProgram);
+    gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, 
+                       normalBufferProgram.itemSize,
+                       gl.FLOAT, false, 0, 0);   
+
+    //Draw 
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triangleBufferProgram);
+    gl.drawElements(gl.TRIANGLES, triangleBufferProgram.numItems, gl.UNSIGNED_INT,0);
 }
 
 /**
- * Initialize buffer attributes related to terrain mesh
- */
-function initializeTerrainBufferAttributes() {
-    gl.useProgram(shaderProgram);
+//  * Initialize buffer attributes related to terrain mesh
+//  */
+// function initializeTerrainBufferAttributes() {
+//     gl.useProgram(shaderProgram);
     
-    /* Initialize vertex attribute location and enable for vertex buffer*/
-    let vertexAttributeLocation = gl.getAttribLocation(shaderProgram, "a_vertex");
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBufferProgram);
-    gl.enableVertexAttribArray(vertexAttributeLocation);
-    gl.vertexAttribPointer(vertexAttributeLocation, vertexBufferProgram.itemSize, gl.FLOAT, false, 0, 0);
+//     /* Initialize vertex attribute location and enable for vertex buffer*/
+//     let vertexAttributeLocation = gl.getAttribLocation(shaderProgram, "a_vertex");
+//     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBufferProgram);
+//     gl.enableVertexAttribArray(vertexAttributeLocation);
+//     gl.vertexAttribPointer(vertexAttributeLocation, vertexBufferProgram.itemSize, gl.FLOAT, false, 0, 0);
 
-    /* Initialize normal attribute location*/
-    let normalAttributeLocation = gl.getAttribLocation(shaderProgram, "a_normal");
-    gl.bindBuffer(gl.ARRAY_BUFFER, normalBufferProgram);
-    gl.enableVertexAttribArray(normalAttributeLocation);
-    gl.vertexAttribPointer(normalAttributeLocation, normalBufferProgram.itemSize, gl.FLOAT, false, 0, 0);
+//     /* Initialize normal attribute location*/
+//     let normalAttributeLocation = gl.getAttribLocation(shaderProgram, "a_normal");
+//     gl.bindBuffer(gl.ARRAY_BUFFER, normalBufferProgram);
+//     gl.enableVertexAttribArray(normalAttributeLocation);
+//     gl.vertexAttribPointer(normalAttributeLocation, normalBufferProgram.itemSize, gl.FLOAT, false, 0, 0);
 
-    //let triangleAttributeLocation = gl.getAttribLocation(shaderProgram, "a_");
-}
+//     //let triangleAttributeLocation = gl.getAttribLocation(shaderProgram, "a_");
+// }
 

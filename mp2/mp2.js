@@ -119,7 +119,7 @@ function draw(vertexBuffer) {
   setLightUniforms(lightPosition,lAmbient,lDiffuse,lSpecular);
   setMaterialUniforms(shininess,kAmbient,kTerrainDiffuse,kSpecular);
 
-  //drawTerrain();
+  drawTerrain();
 }
 
 function setShaderModelView() {
