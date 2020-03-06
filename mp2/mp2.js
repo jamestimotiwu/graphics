@@ -152,7 +152,7 @@ function initializeBuffers() {
   let vertexAttributeLocation = gl.getAttribLocation(shaderProgram, "a_vertex");
   let normalAttributeLocation = gl.getAttribLocation(shaderProgram, "a_normal");
 
-  var colorAttributeLocation = gl.getAttribLocation(shaderProgram, "a_color");
+  //var colorAttributeLocation = gl.getAttribLocation(shaderProgram, "a_color");
   vertexBuffer = gl.createBuffer();
   colorBuffer = gl.createBuffer();
 
@@ -162,8 +162,8 @@ function initializeBuffers() {
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   gl.enable(gl.DEPTH_TEST);
-  gl.useProgram(shaderProgram);  
 
+  gl.useProgram(shaderProgram);  
   // Set window resolution
   gl.uniform2f(gl.getUniformLocation(shaderProgram, "u_resolution"), gl.canvas.width, gl.canvas.height);
   
@@ -188,7 +188,7 @@ function initializeBuffers() {
  * Initializes shader program based on shader code in DOM
  */
 function initializeShaderProgram() {
-  var vertexShader = initializeShader("vertex-shader", gl.VERTEX_SHADER)
+  let vertexShader = initializeShader("vertex-shader", gl.VERTEX_SHADER)
   var fragmentShader = initializeShader("fragment-shader", gl.FRAGMENT_SHADER)
 
   shaderProgram = gl.createProgram();
@@ -198,13 +198,28 @@ function initializeShaderProgram() {
 
   if (gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
     gl.useProgram(shaderProgram);
-    shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "a_position");
-    shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "u_color");
-    shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+    shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "a_vertex");
+    shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "a_normal");
+    //shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "u_color");
+    //shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
     return shaderProgram;
   }
 
   console.log("initializeShader: Error setting up shaders")
+}
+
+function initializeUniforms() {
+  shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+  shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
+  shaderProgram.nMatrixUniform = gl.getUniformLocation(shaderProgram, "uNMatrix");
+  shaderProgram.uniformLightPositionLoc = gl.getUniformLocation(shaderProgram, "uLightPosition");    
+  shaderProgram.uniformAmbientLightColorLoc = gl.getUniformLocation(shaderProgram, "uAmbientLightColor");  
+  shaderProgram.uniformDiffuseLightColorLoc = gl.getUniformLocation(shaderProgram, "uDiffuseLightColor");
+  shaderProgram.uniformSpecularLightColorLoc = gl.getUniformLocation(shaderProgram, "uSpecularLightColor");
+  shaderProgram.uniformShininessLoc = gl.getUniformLocation(shaderProgram, "uShininess");    
+  shaderProgram.uniformAmbientMaterialColorLoc = gl.getUniformLocation(shaderProgram, "uKAmbient");  
+  shaderProgram.uniformDiffuseMaterialColorLoc = gl.getUniformLocation(shaderProgram, "uKDiffuse");
+  shaderProgram.uniformSpecularMaterialColorLoc = gl.getUniformLocation(shaderProgram, "uKSpecular");
 }
 
 /**
