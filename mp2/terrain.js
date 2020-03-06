@@ -321,7 +321,7 @@ function initializeTerrain() {
     console.log(normalBuffer);
     console.log(triangleBuffer);
     initializeTerrainBuffers();
-    drawTerrain();
+    //drawTerrain();
 }
 
 /**

@@ -126,6 +126,7 @@ function draw(vertexBuffer) {
   setMaterialUniforms(shininess,kAmbient,kTerrainDiffuse,kSpecular);
 
   drawTerrain();
+
   mvPop();
 }
 
@@ -202,7 +203,7 @@ function initializeBuffers() {
    // Tell WebGL how to convert from clip space to pixels
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
   // Clear canvas
-  gl.clear(gl.COLOR_BUFFER_BIT);
+  //gl.clear(gl.COLOR_BUFFER_BIT);
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   gl.enable(gl.DEPTH_TEST);
 
@@ -242,7 +243,9 @@ function initializeShaderProgram() {
   if (gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
     gl.useProgram(shaderProgram);
     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "a_vertex");
+    gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
     shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "a_normal");
+    gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
     //shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "u_color");
     //shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
     initializeUniforms();
