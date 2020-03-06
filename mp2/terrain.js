@@ -307,6 +307,8 @@ function initializeTerrain() {
     generatePlane(minX, maxX, minY, maxY);
     generateTerrain(minX, maxX, minY, maxY);
     generateNormals(minX, maxX, minY, maxY);
+    initializeTerrainBuffers();
+    
 }
 
 /**

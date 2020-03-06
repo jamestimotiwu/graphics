@@ -3,7 +3,7 @@
  * @author James Timotiwu <jit2@illinois.edu>
  */
 
-const { mat4, mat3, vec3 } = glMatrix;
+//const { mat4, mat3, vec3 } = glMatrix;
 
 /** Rendering globals */
 /** @global WebGL context */
@@ -120,6 +120,7 @@ function draw(vertexBuffer) {
   setMaterialUniforms(shininess,kAmbient,kTerrainDiffuse,kSpecular);
 
   drawTerrain();
+  //mvPop();
 }
 
 function setShaderModelView() {
@@ -181,12 +182,12 @@ function bufferGeometry(positions) {
  * Initialize buffer for vertex position
  */
 function initializeBuffers() {
-  let vertexAttributeLocation = gl.getAttribLocation(shaderProgram, "a_vertex");
-  let normalAttributeLocation = gl.getAttribLocation(shaderProgram, "a_normal");
+  //let vertexAttributeLocation = gl.getAttribLocation(shaderProgram, "a_vertex");
+  //let normalAttributeLocation = gl.getAttribLocation(shaderProgram, "a_normal");
 
   //var colorAttributeLocation = gl.getAttribLocation(shaderProgram, "a_color");
-  vertexBuffer = gl.createBuffer();
-  colorBuffer = gl.createBuffer();
+  //vertexBuffer = gl.createBuffer();
+  //colorBuffer = gl.createBuffer();
 
    // Tell WebGL how to convert from clip space to pixels
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
@@ -201,10 +202,10 @@ function initializeBuffers() {
   
   // Enable vertex buffers
   //gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-  gl.enableVertexAttribArray(vertexAttributeLocation);
+  //gl.enableVertexAttribArray(vertexAttributeLocation);
 
   // Enable normal buffers
-  gl.enableVertexAttribArray(normalAttributeLocation);
+  //gl.enableVertexAttribArray(normalAttributeLocation);
 
   // 2 components per iteration
   //gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
@@ -320,4 +321,20 @@ function startup() {
   initializeShaderProgram();
   initializeBuffers();
   gl.clear(gl.COLOR_BUFFER_BIT);
+  draw();
+  //tick();
+}
+
+function tick() {
+  requestAnimationFrame(tick);
+  draw();
+}
+
+/**
+ * Translates degrees to radians
+ * @param {Number} degrees Degree input to function
+ * @return {Number} The radians that correspond to the degree input
+ */
+function degToRad(degrees) {
+  return degrees * Math.PI / 180;
 }
