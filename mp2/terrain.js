@@ -70,7 +70,7 @@ function generatePlane(minX, maxX, minY, maxY) {
 
             normalBuffer.push(0);
             normalBuffer.push(0);
-            normalBuffer.push(1);
+            normalBuffer.push(0);
         }
     }
 
@@ -263,9 +263,9 @@ function generateNormals(minX, maxX, minY, maxY) {
                                    v_3[1] - v_1[1], 
                                    v_3[2] - v_1[2]));
             
-            n_1 = getNormal(n_1, i, j + 1);
-            n_2 = getNormal(n_2, i + 1, j + 1);
-            n_3 = getNormal(n_3, i, j + 1);
+            n_1 = getNormal(i, j + 1);
+            n_2 = getNormal(i + 1, j + 1);
+            n_3 = getNormal(i, j + 1);
 
             /* Update normals with calculated normal */
             n_1[0] += product[0];
