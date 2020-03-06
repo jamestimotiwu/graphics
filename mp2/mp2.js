@@ -92,6 +92,7 @@ function draw(vertexBuffer) {
 }
 
 function setShaderModelView() {
+  /* Usage of sending uniform matrix down to shader here */
   gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
 }
 
