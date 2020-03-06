@@ -14,6 +14,15 @@ var triangleBuffer = [];
 /* Normal buffer */
 var normalBuffer = [];
 
+/* Vertex buffer program */
+var vertexBufferProgram;
+
+/* Triangle buffer program */
+var triangleBufferProgram;
+
+/* Normal buffer program */
+var normalBufferProgram;
+
 /* Terrain colors */
 var colorBuffer = [];
 
@@ -298,5 +307,56 @@ function initializeTerrain() {
     generatePlane(minX, maxX, minY, maxY);
     generateTerrain(minX, maxX, minY, maxY);
     generateNormals(minX, maxX, minY, maxY);
+}
+
+/**
+ * Initializes buffer for terrain data drawing
+ */
+function initializeTerrainBuffers() {
+    /* Initialize vertex buffer */
+    vertexBufferProgram = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBufferProgram);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexBuffer), gl.STATIC_DRAW);
+    vertexBufferProgram.itemSize = 3;
+    vertexBufferProgram.numItems = numVertices;
+
+    /* Initialize normals buffer */
+    normalBufferProgram = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, normalBufferProgram);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normalBuffer),
+    gl.STATIC_DRAW);
+    normalBufferProgram.itemSize = 3;
+    normalBufferProgram.numItems = numVertices;
+
+    /* Initialize triangle face buffer */
+    triangleBufferProgram = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triangleBufferProgram);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(triangleBuffer),
+    gl.STATIC_DRAW);
+    triangleBufferProgram.itemSize = 1;
+    triangleBufferProgram.numItems = triangleBuffer.length;
+
+    gl.attachShader(shaderProgram, vertexBufferProgram)
+}
+
+/**
+ * Initialize buffer attributes related to terrain mesh
+ */
+function initializeTerrainBufferAttributes() {
+    gl.useProgram(shaderProgram);
+    
+    /* Initialize vertex attribute location and enable for vertex buffer*/
+    let vertexAttributeLocation = gl.getAttribLocation(shaderProgram, "a_vertex");
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBufferProgram);
+    gl.enableVertexAttribArray(vertexAttributeLocation);
+    gl.vertexAttribPointer(vertexAttributeLocation, vertexBufferProgram.itemSize, gl.FLOAT, false, 0, 0);
+
+    /* Initialize normal attribute location*/
+    let normalAttributeLocation = gl.getAttribLocation(shaderProgram, "a_normal");
+    gl.bindBuffer(gl.ARRAY_BUFFER, normalBufferProgram);
+    gl.enableVertexAttribArray(normalAttributeLocation);
+    gl.vertexAttribPointer(normalAttributeLocation, normalBufferProgram.itemSize, gl.FLOAT, false, 0, 0);
+
+    //let triangleAttributeLocation = gl.getAttribLocation(shaderProgram, "a_");
 }
 

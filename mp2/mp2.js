@@ -82,17 +82,25 @@ function draw(vertexBuffer) {
   //gl.drawElements(gl.TRIANGLES, ,num)
   /* Generate view */
   generateView();
-
-  /* Draw terrain */
-
-  bufferGeometry(vertexBuffer);
   /* Set terrain in front of view */
   vec3.set(transformVec,0.0,-0.25,-2.0);
   mat4.translate(mvMatrix, mvMatrix,transformVec);
   mat4.rotateY(mvMatrix, mvMatrix, degToRad(viewRot));
   mat4.rotateX(mvMatrix, mvMatrix, degToRad(-75));
 
+  bufferTerrain();
+}
 
+function setShaderModelView() {
+  gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
+}
+
+function setShaderProjection() {
+  gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, pMatrix);
+}
+
+function setShaderNormal() {
+  gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
 }
 
 /**
@@ -116,7 +124,7 @@ function generateView() {
 /** mvMatrix Stack Operations */
 /** mvMatrix stack push operation */
 function mvPush() {
-  var copy = mat4.clone(mvMatrix);
+  let copy = mat4.clone(mvMatrix);
   mvMatrixStack.push(copy);
 }
 
@@ -141,7 +149,9 @@ function bufferGeometry(positions) {
  * Initialize buffer for vertex position
  */
 function initializeBuffers() {
-  var positionAttributeLocation = gl.getAttribLocation(shaderProgram, "a_position");
+  let vertexAttributeLocation = gl.getAttribLocation(shaderProgram, "a_vertex");
+  let normalAttributeLocation = gl.getAttribLocation(shaderProgram, "a_normal");
+
   var colorAttributeLocation = gl.getAttribLocation(shaderProgram, "a_color");
   vertexBuffer = gl.createBuffer();
   colorBuffer = gl.createBuffer();
@@ -152,20 +162,25 @@ function initializeBuffers() {
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   gl.enable(gl.DEPTH_TEST);
-  gl.useProgram(shaderProgram);
+  gl.useProgram(shaderProgram);  
+
   // Set window resolution
   gl.uniform2f(gl.getUniformLocation(shaderProgram, "u_resolution"), gl.canvas.width, gl.canvas.height);
   
   // Enable vertex buffers
-  gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-  gl.enableVertexAttribArray(positionAttributeLocation);
+  //gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+  gl.enableVertexAttribArray(vertexAttributeLocation);
+
+  // Enable normal buffers
+  gl.enableVertexAttribArray(normalAttributeLocation);
+
   // 2 components per iteration
-  gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+  //gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
 
   // Enable color buffers
-  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-  gl.enableVertexAttribArray(colorAttributeLocation);
-  gl.vertexAttribPointer(colorAttributeLocation, 4, gl.FLOAT, false, 0, 0);
+  //gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+  //gl.enableVertexAttribArray(colorAttributeLocation);
+  //gl.vertexAttribPointer(colorAttributeLocation, 4, gl.FLOAT, false, 0, 0);
 
 }
 
