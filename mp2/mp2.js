@@ -3,6 +3,8 @@
  * @author James Timotiwu <jit2@illinois.edu>
  */
 
+const { mat4, mat3, vec3 } = glMatrix;
+
 /** Rendering globals */
 /** @global WebGL context */
 var gl;
@@ -21,13 +23,19 @@ var meshSet = []
 
 /** Transformation globals */
 /** @global Modelview matrix*/
-var mvMatrix = glMatrix.mat4.create();
+var mvMatrix = mat4.create();
+
+/** @global Modelview stack for hierarchical stack operations */
+var mvMatrixStack = [];
 
 /** @global Projection matrix */
-var pMatrix = glMatrix.mat4.create();
+var pMatrix = mat4.create();
 
 /** @global Angle of rotation */
 var defAngle = 0;
+
+/** @global Angle of rotation around y axis for view*/
+var viewRot = 10;
 
 /** View globals */
 /** @global Camera location in world coordinates */
@@ -66,6 +74,8 @@ function getGLContext(canvas) {
 }
 
 function draw(vertexBuffer) {
+  let transformVec = vec3.create();
+
   gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -101,6 +111,21 @@ function generateView() {
   /* Look down -z; viewPt, eyePt, viewDir*/
   vec3.add(viewPt, eyePt, viewDir);
   mat4.lookAt(mvMatrix, eyePt, viewPt, up);
+}
+
+/** mvMatrix Stack Operations */
+/** mvMatrix stack push operation */
+function mvPush() {
+  var copy = mat4.clone(mvMatrix);
+  mvMatrixStack.push(copy);
+}
+
+/** mvMatrix stack pop operation */
+function mvPop() {
+  if (mvMatrixStack.length == 0) {
+    throw "Invalid popMatrix!";
+  }
+  mvMatrix = mvMatrixStack.pop();
 }
 
 /**
@@ -185,17 +210,6 @@ function initializeShader(id, type) {
 
   console.log("initializeShaders: Error compiling shader" + gl.getShaderInfoLog(shader));
   gl.deleteShader(shader);
-}
-
-/**
- * Loads meshes for animation
- */
-function initializeMeshes() {
-  meshSet.push(generateIlliniGeometry(0,0));
-  colorSet.push(generateIlliniColors());
-
-  meshSet.push(generateLandscapeGeometry());
-  colorSet.push(generateLandscapeColors());
 }
 
 /**
