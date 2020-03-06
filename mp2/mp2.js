@@ -31,6 +31,9 @@ var mvMatrixStack = [];
 /** @global Projection matrix */
 var pMatrix = mat4.create();
 
+/** @global Normal matrix */
+var nMatrix = mat4.create();
+
 /** @global Angle of rotation */
 var defAngle = 0;
 
@@ -97,11 +100,11 @@ function setShaderModelView() {
 }
 
 function setShaderProjection() {
-  gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, pMatrix);
+  gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
 }
 
 function setShaderNormal() {
-  gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
+  gl.uniformMatrix4fv(shaderProgram.nMatrixUniform, false, nMatrix);
 }
 
 /**
