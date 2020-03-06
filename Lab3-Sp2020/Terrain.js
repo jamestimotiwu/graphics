@@ -296,7 +296,6 @@ generateTerrain() {
                 /* 4. Dot product test: (b-p) * n > 0 s.t. b is the current vertex, p is the random point*/
                 var side = [curr[0] - random_x, curr[1] - random_y, 0];
                 var dot_p = this.dotProduct(side, [random_x_n, random_y_n, 0]);
-
                 if (dot_p > 0) {
                     curr[2] += deltaZ;
                 } else {

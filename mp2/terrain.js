@@ -181,7 +181,7 @@ function generateTerrain(minX, maxX, minY, maxY) {
                 /* 3. Given vertex b, test which side of plane that vertex falls on using dot product test*/
 
                 let curr = [0, 0, 0];
-                getVertex(curr, i, j); 
+                curr = getVertex(i, j); 
 
                 /* 4. Dot product test: (b-p) * n > 0 s.t. b is the current vertex, p is the random point*/
                 let side = vec3.fromValues(curr[0] - randomX, curr[1] - randomY, 0);
@@ -250,9 +250,9 @@ function generateNormals(minX, maxX, minY, maxY) {
             setNormal(n_3, i + 1, j);
 
             /* Lower triangle face */
-            v_1 = getVertex(v_1, i, j + 1);
-            v_2 = getVertex(v_2, i + 1, j + 1);
-            v_3 = getVertex(v_3, i, j + 1);
+            v_1 = getVertex(i, j + 1);
+            v_2 = getVertex(i + 1, j + 1);
+            v_3 = getVertex(i, j + 1);
 
             /* (v2 - v1) x (v3 - v1) */
             vec3.cross(product, 
@@ -309,6 +309,8 @@ function initializeTerrain() {
     let maxY = 0.5;
 
     generatePlane(minX, maxX, minY, maxY);
+    generateTerrain(minX, maxX, minY, maxY);
+    generateNormals(minX, maxX, minY, maxY);
 
     // Get extension for 4 byte integer indices for drwElements
     var ext = gl.getExtension('OES_element_index_uint');
@@ -321,7 +323,6 @@ function initializeTerrain() {
     console.log(normalBuffer);
     console.log(triangleBuffer);
     initializeTerrainBuffers();
-    //drawTerrain();
 }
 
 /**
