@@ -56,6 +56,31 @@ var viewPt = vec3.fromValues(0.0, 0.0, 0.0);
 /** @global Elapsed tick */
 var t = 0; 
 
+
+/** Lighting parameters */
+/** @global Light position in VIEW coordinates */
+var lightPosition = [0,3,3];
+/** @global Ambient light color/intensity for Phong reflection */
+var lAmbient = [0,0,0];
+/** @global Diffuse light color/intensity for Phong reflection */
+var lDiffuse = [1,1,1];
+/** @global Specular light color/intensity for Phong reflection */
+var lSpecular =[0,0,0];
+
+//Material parameters
+/** @global Ambient material color/intensity for Phong reflection */
+var kAmbient = [1.0,1.0,1.0];
+/** @global Diffuse material color/intensity for Phong reflection */
+var kTerrainDiffuse = [150.0/255.0,163.0/255.0,63.0/255.0];
+/** @global Specular material color/intensity for Phong reflection */
+var kSpecular = [0.0,0.0,0.0];
+/** @global Shininess exponent for Phong reflection */
+var shininess = 23;
+/** @global Edge color fpr wireframeish rendering */
+var kEdgeBlack = [0.0,0.0,0.0];
+/** @global Edge color for wireframe rendering */
+var kEdgeWhite = [1.0,1.0,1.0];
+
 /**
  * Get WebGL context for canvas
  * @param {element} canvas canvas
