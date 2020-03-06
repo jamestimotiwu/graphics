@@ -194,7 +194,8 @@ generateTriangles()
     //Your code here
     var deltaX = (this.maxX - this.minX) / this.div;
     var deltaY = (this.maxY - this.minY) / this.div;
-
+    console.log(deltaX);
+    console.log(deltaY);
     // Rand height
     // Create flat map
     for (var i = 0; i <= this.div; i++) {
@@ -205,7 +206,7 @@ generateTriangles()
 
             this.nBuffer.push(0);
             this.nBuffer.push(0);
-            this.nBuffer.push(0);
+            this.nBuffer.push(1);
         }
     }
 
@@ -222,10 +223,12 @@ generateTriangles()
         }
     }
     
-    this.generateTerrain();
-    this.generateNormals();
+    //this.generateTerrain();
+    //this.generateNormals();
     //this.updateTerrainNormals();
+    console.log(this.vBuffer);
     console.log(this.nBuffer);
+    console.log(this.fBuffer);
     //
     this.numVertices = this.vBuffer.length/3;
     this.numFaces = this.fBuffer.length/3;

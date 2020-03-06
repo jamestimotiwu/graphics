@@ -54,9 +54,13 @@ var div;
  * @param {*} vertex_array 
  */
 function generatePlane(minX, maxX, minY, maxY) {
+    console.log(div);
     /* Subdivided plane size */
-    let deltaX = (this.maxX - this.minX) / div;
-    let deltaY = (this.maxY - this.minY) / div;
+    let deltaX = (maxX - minX) / div;
+    let deltaY = (maxY - minY) / div;
+
+    console.log(deltaX);
+    console.log(deltaY);
 
     for (let i = 0; i <= div; i++) {
         for (let j = 0; j <= div; j++) {
@@ -83,7 +87,7 @@ function generatePlane(minX, maxX, minY, maxY) {
         }
     }
 
-    numVertices = triangleBuffer.length/3;
+    numVertices = vertexBuffer.length/3;
     numFaces = triangleBuffer.length/3;
 }
 
@@ -305,10 +309,19 @@ function initializeTerrain() {
     let maxY = 0.5;
 
     generatePlane(minX, maxX, minY, maxY);
-    generateTerrain(minX, maxX, minY, maxY);
-    generateNormals(minX, maxX, minY, maxY);
+
+    // Get extension for 4 byte integer indices for drwElements
+    var ext = gl.getExtension('OES_element_index_uint');
+    if (ext ==null){
+        alert("OES_element_index_uint is unsupported by your browser and terrain generation cannot proceed.");
+    }
+    //generateTerrain(minX, maxX, minY, maxY);
+    //generateNormals(minX, maxX, minY, maxY);
+    console.log(vertexBuffer);
+    console.log(normalBuffer);
+    console.log(triangleBuffer);
     initializeTerrainBuffers();
-    
+    drawTerrain();
 }
 
 /**
@@ -321,6 +334,7 @@ function initializeTerrainBuffers() {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexBuffer), gl.STATIC_DRAW);
     vertexBufferProgram.itemSize = 3;
     vertexBufferProgram.numItems = numVertices;
+    console.log("Loaded ", vertexBufferProgram.numItems, " vertices");
 
     /* Initialize normals buffer */
     normalBufferProgram = gl.createBuffer();
@@ -329,6 +343,7 @@ function initializeTerrainBuffers() {
     gl.STATIC_DRAW);
     normalBufferProgram.itemSize = 3;
     normalBufferProgram.numItems = numVertices;
+    console.log("Loaded ", normalBufferProgram.numItems, " normals");
 
     /* Initialize triangle face buffer */
     triangleBufferProgram = gl.createBuffer();
@@ -337,10 +352,12 @@ function initializeTerrainBuffers() {
     gl.STATIC_DRAW);
     triangleBufferProgram.itemSize = 1;
     triangleBufferProgram.numItems = triangleBuffer.length;
+    console.log("Loaded ", triangleBufferProgram.numItems, " triangles");
 }
 
 function drawTerrain() {
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBufferProgram);
+    //console.log(shaderProgram);
     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, vertexBufferProgram.itemSize, 
                      gl.FLOAT, false, 0, 0);
     // Bind normal buffer
@@ -375,3 +392,24 @@ function drawTerrain() {
 //     //let triangleAttributeLocation = gl.getAttribLocation(shaderProgram, "a_");
 // }
 
+
+function printBuffers()
+    {
+        
+    for(var i=0;i<this.numVertices;i++)
+          {
+           console.log("v ", this.vertexBuffer[i*3], " ", 
+                             this.vertexBuffer[i*3 + 1], " ",
+                             this.vertexBuffer[i*3 + 2], " ");
+                       
+          }
+    
+      for(var i=0;i<this.numFaces;i++)
+          {
+           console.log("f ", this.normalBuffer[i*3], " ", 
+                             this.normalBuffer[i*3 + 1], " ",
+                             this.normalBuffer[i*3 + 2], " ");
+                       
+          }
+        
+    }

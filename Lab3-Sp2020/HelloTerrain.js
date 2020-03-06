@@ -99,6 +99,7 @@ function uploadNormalMatrixToShader() {
   mat3.fromMat4(nMatrix,mvMatrix);
   mat3.transpose(nMatrix,nMatrix);
   mat3.invert(nMatrix,nMatrix);
+  //console.log(nMatrix);
   gl.uniformMatrix3fv(shaderProgram.nMatrixUniform, false, nMatrix);
 }
 
@@ -353,7 +354,8 @@ function draw() {
   setupBuffers();
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   gl.enable(gl.DEPTH_TEST);
-  tick();
+  draw();
+  //tick();
 }
 
 //----------------------------------------------------------------------------------

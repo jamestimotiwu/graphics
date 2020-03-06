@@ -32,7 +32,7 @@ var mvMatrixStack = [];
 var pMatrix = mat4.create();
 
 /** @global Normal matrix */
-var nMatrix = mat4.create();
+var nMatrix = mat3.create();
 
 /** @global Angle of rotation */
 var defAngle = 0;
@@ -107,20 +107,26 @@ function draw(vertexBuffer) {
   gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+  generatePerspective();
   //gl.drawElements(gl.TRIANGLES, ,num)
   /* Generate view */
   generateView();
   /* Set terrain in front of view */
+  mvPush();
   vec3.set(transformVec,0.0,-0.25,-2.0);
   mat4.translate(mvMatrix, mvMatrix,transformVec);
   mat4.rotateY(mvMatrix, mvMatrix, degToRad(viewRot));
   mat4.rotateX(mvMatrix, mvMatrix, degToRad(-75));
+  
+  setShaderModelView();
+  setShaderNormal();
+  setShaderProjection();
 
   setLightUniforms(lightPosition,lAmbient,lDiffuse,lSpecular);
   setMaterialUniforms(shininess,kAmbient,kTerrainDiffuse,kSpecular);
 
   drawTerrain();
-  //mvPop();
+  mvPop();
 }
 
 function setShaderModelView() {
@@ -133,7 +139,11 @@ function setShaderProjection() {
 }
 
 function setShaderNormal() {
-  gl.uniformMatrix4fv(shaderProgram.nMatrixUniform, false, nMatrix);
+  mat3.fromMat4(nMatrix,mvMatrix);
+  mat3.transpose(nMatrix,nMatrix);
+  mat3.invert(nMatrix,nMatrix);
+  console.log(nMatrix);
+  gl.uniformMatrix3fv(shaderProgram.nMatrixUniform, false, nMatrix);
 }
 
 /**
@@ -317,9 +327,10 @@ function startup() {
   var canvas = document.getElementById("mp1GLCanvas")
   gl = getGLContext(canvas)
   //initializeMeshes();
-  initializeTerrain();
+  //initializeTerrain();
   initializeShaderProgram();
   initializeBuffers();
+  initializeTerrain();
   gl.clear(gl.COLOR_BUFFER_BIT);
   draw();
   //tick();
