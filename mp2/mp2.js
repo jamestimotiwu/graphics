@@ -75,7 +75,7 @@ var kTerrainDiffuse = [150.0/255.0,163.0/255.0,63.0/255.0];
 /** @global Specular material color/intensity for Phong reflection */
 var kSpecular = [0.0,0.0,0.0];
 /** @global Shininess exponent for Phong reflection */
-var shininess = 23;
+var shininess = 50;
 /** @global Edge color fpr wireframeish rendering */
 var kEdgeBlack = [0.0,0.0,0.0];
 /** @global Edge color for wireframe rendering */
@@ -101,7 +101,10 @@ function getGLContext(canvas) {
      return context;
 }
 
-function draw(vertexBuffer) {
+/**
+ * Draw function to set up perspective, view, and terrain
+ */
+function draw() {
   let transformVec = vec3.create();
 
   gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
@@ -130,15 +133,24 @@ function draw(vertexBuffer) {
   mvPop();
 }
 
+/**
+ * Pass model view matrix in global to shader programs
+ */
 function setShaderModelView() {
   /* Usage of sending uniform matrix down to shader here */
   gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
 }
 
+/**
+ * Pass projection matrix in global to shader programs
+ */
 function setShaderProjection() {
   gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
 }
 
+/**
+ * Pass shader normals in global to shader programs
+ */
 function setShaderNormal() {
   mat3.fromMat4(nMatrix,mvMatrix);
   mat3.transpose(nMatrix,nMatrix);
@@ -193,14 +205,7 @@ function bufferGeometry(positions) {
  * Initialize buffer for vertex position
  */
 function initializeBuffers() {
-  //let vertexAttributeLocation = gl.getAttribLocation(shaderProgram, "a_vertex");
-  //let normalAttributeLocation = gl.getAttribLocation(shaderProgram, "a_normal");
-
-  //var colorAttributeLocation = gl.getAttribLocation(shaderProgram, "a_color");
-  //vertexBuffer = gl.createBuffer();
-  //colorBuffer = gl.createBuffer();
-
-   // Tell WebGL how to convert from clip space to pixels
+  // Tell WebGL how to convert from clip space to pixels
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
   // Clear canvas
   gl.clear(gl.COLOR_BUFFER_BIT);
@@ -210,31 +215,16 @@ function initializeBuffers() {
   gl.useProgram(shaderProgram);  
   // Set window resolution
   gl.uniform2f(gl.getUniformLocation(shaderProgram, "u_resolution"), gl.canvas.width, gl.canvas.height);
-  
-  // Enable vertex buffers
-  //gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-  //gl.enableVertexAttribArray(vertexAttributeLocation);
-
-  // Enable normal buffers
-  //gl.enableVertexAttribArray(normalAttributeLocation);
-
-  // 2 components per iteration
-  //gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
-
-  // Enable color buffers
-  //gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-  //gl.enableVertexAttribArray(colorAttributeLocation);
-  //gl.vertexAttribPointer(colorAttributeLocation, 4, gl.FLOAT, false, 0, 0);
-
 }
 
 /**
  * Initializes shader program based on shader code in DOM
  */
 function initializeShaderProgram() {
-  let vertexShader = initializeShader("vertex-shader", gl.VERTEX_SHADER)
+  var vertexShader = initializeShader("vertex-shader", gl.VERTEX_SHADER)
   var fragmentShader = initializeShader("fragment-shader", gl.FRAGMENT_SHADER)
 
+  console.log(vertexShader);
   shaderProgram = gl.createProgram();
   gl.attachShader(shaderProgram, vertexShader)
   gl.attachShader(shaderProgram, fragmentShader)
@@ -246,8 +236,6 @@ function initializeShaderProgram() {
     gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
     shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "a_normal");
     gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
-    //shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "u_color");
-    //shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
     initializeUniforms();
     return shaderProgram;
   }
@@ -255,6 +243,9 @@ function initializeShaderProgram() {
   console.log("initializeShader: Error setting up shaders")
 }
 
+/**
+ * Initialize all uniform variables for matricies and fragment shading
+ */
 function initializeUniforms() {
   shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
   shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");

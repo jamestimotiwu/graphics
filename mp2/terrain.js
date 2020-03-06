@@ -38,30 +38,19 @@ var numFaces = 0;
 /* Num subdivisions */
 var div;
 
-/* 1. Write procedural generation */
-/* Create flat triangulated surface */
-/* Produce triangles */
-/* Generate tessellated quadrilateral / divide rectangles up into triangles */
-/* Generate tessellated quad using recursion / iteration */
-
 /**
- * 
- * @param {*} div - number of subdivisions in plane
- * @param {*} min_x 
- * @param {*} max_x 
- * @param {*} min_y 
- * @param {*} max_y 
- * @param {*} vertex_array 
+ * Generates flat plane given corners and set number of subdivisions
+ * @param {*} minX - min x of terrain
+ * @param {*} maxX - max x of terrain
+ * @param {*} minY - min y of terrain
+ * @param {*} maxY - max y of terrain
  */
 function generatePlane(minX, maxX, minY, maxY) {
-    console.log(div);
     /* Subdivided plane size */
     let deltaX = (maxX - minX) / div;
     let deltaY = (maxY - minY) / div;
 
-    console.log(deltaX);
-    console.log(deltaY);
-
+    /* Generate vertices and push into vertex buffer */
     for (let i = 0; i <= div; i++) {
         for (let j = 0; j <= div; j++) {
             vertexBuffer.push(minX + deltaX * j);
@@ -74,6 +63,7 @@ function generatePlane(minX, maxX, minY, maxY) {
         }
     }
 
+    /* Generate mappings of vertices to triangles into triangle buffer*/
     for (let i = 0; i < div; i++) {
         for (let j = 0; j < div; j++) {
             let divAddr = i * (div + 1) + j;
@@ -92,7 +82,7 @@ function generatePlane(minX, maxX, minY, maxY) {
 }
 
 /**
- * 
+ * Set vertex in vertex buffer given i,j position
  * @param {*} v 
  * @param {*} i 
  * @param {*} j 
@@ -107,7 +97,7 @@ function setVertex(v, i, j) {
 }
 
 /**
- * 
+ * Get vertex in vertex buffer given i,j position
  * @param {*} i 
  * @param {*} j 
  */
@@ -124,7 +114,7 @@ function getVertex(i, j) {
 }
 
 /**
- * 
+ * Set normal in normal buffer given i,j position
  * @param {*} n 
  * @param {*} i 
  * @param {*} j 
@@ -139,7 +129,7 @@ function setNormal(n, i, j) {
 }
 
 /**
- * 
+ * Set normal in normal buffer given i,j position
  * @param {*} i 
  * @param {*} j 
  */
@@ -156,12 +146,11 @@ function getNormal(i, j) {
 }
 
 /**
- * 
- * @param {*} div 
- * @param {*} minX 
- * @param {*} maxX 
- * @param {*} minY 
- * @param {*} maxY 
+ * Generates terrain for current existing plane
+ * @param {*} minX - min x of terrain
+ * @param {*} maxX - max x of terrain
+ * @param {*} minY - min y of terrain
+ * @param {*} maxY - max y of terrain
  */
 function generateTerrain(minX, maxX, minY, maxY) {
     let deltaZ = 0.005;
@@ -200,12 +189,11 @@ function generateTerrain(minX, maxX, minY, maxY) {
 }
 
 /**
- * 
- * @param {*} div 
- * @param {*} minX 
- * @param {*} maxX 
- * @param {*} minY 
- * @param {*} maxY 
+ * Generates normals for current existing terrains
+ * @param {*} minX - min x of terrain
+ * @param {*} maxX - max x of terrain
+ * @param {*} minY - min y of terrain
+ * @param {*} maxY - max y of terrain
  */
 function generateNormals(minX, maxX, minY, maxY) {
     /* Iterate over grid */
@@ -299,7 +287,7 @@ function generateNormals(minX, maxX, minY, maxY) {
 }
 
 /**
- * 
+ * Initializes terrain parameters
  */
 function initializeTerrain() {
     div = 64;
@@ -356,6 +344,9 @@ function initializeTerrainBuffers() {
     console.log("Loaded ", triangleBufferProgram.numItems, " triangles");
 }
 
+/**
+ * Uses draw elements to draw mesh in buffer
+ */
 function drawTerrain() {
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBufferProgram);
     //console.log(shaderProgram);
@@ -371,46 +362,3 @@ function drawTerrain() {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triangleBufferProgram);
     gl.drawElements(gl.TRIANGLES, triangleBufferProgram.numItems, gl.UNSIGNED_INT,0);
 }
-
-/**
-//  * Initialize buffer attributes related to terrain mesh
-//  */
-// function initializeTerrainBufferAttributes() {
-//     gl.useProgram(shaderProgram);
-    
-//     /* Initialize vertex attribute location and enable for vertex buffer*/
-//     let vertexAttributeLocation = gl.getAttribLocation(shaderProgram, "a_vertex");
-//     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBufferProgram);
-//     gl.enableVertexAttribArray(vertexAttributeLocation);
-//     gl.vertexAttribPointer(vertexAttributeLocation, vertexBufferProgram.itemSize, gl.FLOAT, false, 0, 0);
-
-//     /* Initialize normal attribute location*/
-//     let normalAttributeLocation = gl.getAttribLocation(shaderProgram, "a_normal");
-//     gl.bindBuffer(gl.ARRAY_BUFFER, normalBufferProgram);
-//     gl.enableVertexAttribArray(normalAttributeLocation);
-//     gl.vertexAttribPointer(normalAttributeLocation, normalBufferProgram.itemSize, gl.FLOAT, false, 0, 0);
-
-//     //let triangleAttributeLocation = gl.getAttribLocation(shaderProgram, "a_");
-// }
-
-
-function printBuffers()
-    {
-        
-    for(var i=0;i<this.numVertices;i++)
-          {
-           console.log("v ", this.vertexBuffer[i*3], " ", 
-                             this.vertexBuffer[i*3 + 1], " ",
-                             this.vertexBuffer[i*3 + 2], " ");
-                       
-          }
-    
-      for(var i=0;i<this.numFaces;i++)
-          {
-           console.log("f ", this.normalBuffer[i*3], " ", 
-                             this.normalBuffer[i*3 + 1], " ",
-                             this.normalBuffer[i*3 + 2], " ");
-                       
-          }
-        
-    }
