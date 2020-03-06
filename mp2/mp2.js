@@ -1,9 +1,7 @@
 /**
- * @file MP1 Illini Animation
+ * @file MP2 Terrain
  * @author James Timotiwu <jit2@illinois.edu>
  */
-
-//const { mat4, mat3, vec3 } = glMatrix;
 
 /** Rendering globals */
 /** @global WebGL context */
@@ -59,13 +57,13 @@ var t = 0;
 
 /** Lighting parameters */
 /** @global Light position in VIEW coordinates */
-var lightPosition = [0,3,3];
+var lightPosition = [0,1,3];
 /** @global Ambient light color/intensity for Phong reflection */
-var lAmbient = [0,0,0];
+var lAmbient = [0.1,0.1,0.1];
 /** @global Diffuse light color/intensity for Phong reflection */
-var lDiffuse = [1,1,1];
+var lDiffuse = [0.7,1.0,0.3];
 /** @global Specular light color/intensity for Phong reflection */
-var lSpecular =[0,0,0];
+var lSpecular =[0.2,0.5,1.0];
 
 //Material parameters
 /** @global Ambient material color/intensity for Phong reflection */
@@ -73,9 +71,9 @@ var kAmbient = [1.0,1.0,1.0];
 /** @global Diffuse material color/intensity for Phong reflection */
 var kTerrainDiffuse = [150.0/255.0,163.0/255.0,63.0/255.0];
 /** @global Specular material color/intensity for Phong reflection */
-var kSpecular = [0.0,0.0,0.0];
+var kSpecular = [1.0,1.0,1.0];
 /** @global Shininess exponent for Phong reflection */
-var shininess = 50;
+var shininess = 20;
 /** @global Edge color fpr wireframeish rendering */
 var kEdgeBlack = [0.0,0.0,0.0];
 /** @global Edge color for wireframe rendering */

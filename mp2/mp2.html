@@ -89,9 +89,9 @@
         
             // Use halfway vector for Blinn Phong
             vec3 halfwayVector = normalize(vectorToLightSource + viewVectorEye);
-            float hdotv = max(dot(halfwayVector, vectorToLightSource), 0.0);
+            float hdotn = max(dot(halfwayVector, normalEye), 0.2);
             
-            float specularLightWeightning = pow(hdotv, uShininess);
+            float specularLightWeightning = pow(hdotn, uShininess);
         
             // Sum up all three reflection components and send to the fragment shader
             gl_FragColor = vec4(((uAmbientLightColor*uKAmbient)
@@ -104,10 +104,6 @@
     <script src="terrain.js"></script>
     <script src="mp2.js"></script>
     <body onload="startup();">
-        <div id="animationToggle">
-            <input type="radio" id="r1" name="Animation" value=1 checked="checked">
-            <input type="radio" id="r2" name="Animation" value=0> 
-        </div>
         <canvas id="mp1GLCanvas" width="800" height="800"></canvas>
     </body>
 </html>
