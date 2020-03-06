@@ -23,6 +23,9 @@ var meshSet = []
 /** @global Modelview matrix*/
 var mvMatrix = glMatrix.mat4.create();
 
+/** @global Projection matrix */
+var pMatrix = glMatrix.mat4.create();
+
 /** @global Angle of rotation */
 var defAngle = 0;
 
@@ -63,14 +66,32 @@ function getGLContext(canvas) {
 }
 
 function draw(vertexBuffer) {
-  bufferGeometry(vertexBuffer);
+  gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
   //gl.drawElements(gl.TRIANGLES, ,num)
   /* Generate view */
   generateView();
 
   /* Draw terrain */
 
+  bufferGeometry(vertexBuffer);
   /* Set terrain in front of view */
+  vec3.set(transformVec,0.0,-0.25,-2.0);
+  mat4.translate(mvMatrix, mvMatrix,transformVec);
+  mat4.rotateY(mvMatrix, mvMatrix, degToRad(viewRot));
+  mat4.rotateX(mvMatrix, mvMatrix, degToRad(-75));
+
+
+}
+
+/**
+ * Generate perspective given viewport height and width to projection matrix pMatrix
+ */
+function generatePerspective() {
+  mat4.perspective(pMatrix, degToRad(45), 
+  gl.viewportWidth / gl.viewportHeight,
+  0.1, 200.0);
 }
 
 /**
@@ -80,8 +101,6 @@ function generateView() {
   /* Look down -z; viewPt, eyePt, viewDir*/
   vec3.add(viewPt, eyePt, viewDir);
   mat4.lookAt(mvMatrix, eyePt, viewPt, up);
-
-  return mvMatrix;
 }
 
 /**
