@@ -202,6 +202,7 @@ function initializeShaderProgram() {
     shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "a_normal");
     //shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "u_color");
     //shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+    initializeUniforms();
     return shaderProgram;
   }
 
@@ -220,6 +221,34 @@ function initializeUniforms() {
   shaderProgram.uniformAmbientMaterialColorLoc = gl.getUniformLocation(shaderProgram, "uKAmbient");  
   shaderProgram.uniformDiffuseMaterialColorLoc = gl.getUniformLocation(shaderProgram, "uKDiffuse");
   shaderProgram.uniformSpecularMaterialColorLoc = gl.getUniformLocation(shaderProgram, "uKSpecular");
+}
+
+/**
+ * Sends material information to the shader
+ * @param {Float32} alpha shininess coefficient
+ * @param {Float32Array} a Ambient material color
+ * @param {Float32Array} d Diffuse material color
+ * @param {Float32Array} s Specular material color
+ */
+function setMaterialUniforms(alpha,a,d,s) {
+  gl.uniform1f(shaderProgram.uniformShininessLoc, alpha);
+  gl.uniform3fv(shaderProgram.uniformAmbientMaterialColorLoc, a);
+  gl.uniform3fv(shaderProgram.uniformDiffuseMaterialColorLoc, d);
+  gl.uniform3fv(shaderProgram.uniformSpecularMaterialColorLoc, s);
+}
+
+/**
+ * Sends light information to the shader
+ * @param {Float32Array} loc Location of light source
+ * @param {Float32Array} a Ambient light strength
+ * @param {Float32Array} d Diffuse light strength
+ * @param {Float32Array} s Specular light strength
+ */
+function setLightUniforms(loc,a,d,s) {
+  gl.uniform3fv(shaderProgram.uniformLightPositionLoc, loc);
+  gl.uniform3fv(shaderProgram.uniformAmbientLightColorLoc, a);
+  gl.uniform3fv(shaderProgram.uniformDiffuseLightColorLoc, d);
+  gl.uniform3fv(shaderProgram.uniformSpecularLightColorLoc, s);
 }
 
 /**
