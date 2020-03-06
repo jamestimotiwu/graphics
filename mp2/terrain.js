@@ -3,6 +3,8 @@
  * @author James Timotiwu <jit2@illinois.edu>
 */
 
+const { mat4, mat3, vec3 } = glMatrix;
+
 /* Vertex buffer */
 var vertexBuffer = [];
 
@@ -24,6 +26,9 @@ var numVertices = 0;
 /* Num faces */
 var numFaces = 0;
 
+/* Num subdivisions */
+var div;
+
 /* 1. Write procedural generation */
 /* Create flat triangulated surface */
 /* Produce triangles */
@@ -39,13 +44,13 @@ var numFaces = 0;
  * @param {*} max_y 
  * @param {*} vertex_array 
  */
-function generatePlane(div, minX, maxX, minY, maxY) {
+function generatePlane(minX, maxX, minY, maxY) {
     /* Subdivided plane size */
     let deltaX = (this.maxX - this.minX) / div;
     let deltaY = (this.maxY - this.minY) / div;
 
     for (let i = 0; i <= div; i++) {
-        for (let j = 0; j <= div, j++) {
+        for (let j = 0; j <= div; j++) {
             vertexBuffer.push(minX + deltaX * j);
             vertexBuffer.push(minY + deltaY * i);
             vertexBuffer.push(0);
@@ -145,7 +150,7 @@ function getNormal(i, j) {
  * @param {*} minY 
  * @param {*} maxY 
  */
-function generateTerrain(div, minX, maxX, minY, maxY) {
+function generateTerrain(minX, maxX, minY, maxY) {
     let deltaZ = 0.005;
     let iterations = 60;
     /* 0. Iterate over randomly generated planes follow below */
@@ -189,10 +194,10 @@ function generateTerrain(div, minX, maxX, minY, maxY) {
  * @param {*} minY 
  * @param {*} maxY 
  */
-function generateNormals(div, minX, maxX, minY, maxY) {
+function generateNormals(minX, maxX, minY, maxY) {
     /* Iterate over grid */
-    for (var i = 0; i < this.div; i++) {
-        for (var j = 0; j < this.div; j++) {
+    for (var i = 0; i < div; i++) {
+        for (var j = 0; j < div; j++) {
             /* Get vertices from every triangle (upper) */
             /* Upper triangle face */
             let v_1 = getVertex(i, j);
@@ -270,9 +275,10 @@ function generateNormals(div, minX, maxX, minY, maxY) {
     }
 
     /* Normalize all normals in nBuffer */
-    for (var i = 0; i <= this.div; i++) {
-        for (var j = 0; j <= this.div; j++) {
-            getNormal(n_1, i, j);
+    for (var i = 0; i <= div; i++) {
+        for (var j = 0; j <= div; j++) {
+            let n_1 = getNormal(i, j);
+            n_1 = vec3.fromValues(n_1[0], n_1[1], n_1[2]);
             vec3.normalize(n_1, n_1);
             setNormal(n_1, i, j);
         }
@@ -283,14 +289,14 @@ function generateNormals(div, minX, maxX, minY, maxY) {
  * 
  */
 function initializeTerrain() {
-    let div = 64;
+    div = 64;
     let minX = -0.5;
     let minY = -0.5;
     let maxX = 0.5;
     let maxY = 0.5;
 
-    generatePlane(div, minX, maxX, minY, maxY);
-    generateTerrain(div, minX, maxX, minY, maxY);
-    generateNormals(div, minX, maxX, minY, maxY);
+    generatePlane(minX, maxX, minY, maxY);
+    generateTerrain(minX, maxX, minY, maxY);
+    generateNormals(minX, maxX, minY, maxY);
 }
 

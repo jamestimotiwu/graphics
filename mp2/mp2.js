@@ -11,7 +11,7 @@ var gl;
 var shaderProgram;
 
 /** @global Position buffer */
-var positionBuffer;
+var vertexBuffer;
 
 /** Meshing globals */
 /** @global Mesh position vertex set
@@ -25,6 +25,19 @@ var mvMatrix = glMatrix.mat4.create();
 
 /** @global Angle of rotation */
 var defAngle = 0;
+
+/** View globals */
+/** @global Camera location in world coordinates */
+var eyePt = vec3.fromValues(0.0, 0.0, 0.0);
+
+/** @global Direction of view in world coordinates (down -z axis)*/
+var viewDir = vec3.fromValues(0.0, 0.0, -1.0);
+
+/** @global Up vector in world coordinates (up y)*/
+var up = vec3.fromValues(0.0, 1.0, 0.0);
+
+/** @global Location of pt along view direction in world coordinates */
+var viewPt = vec3.fromValues(0.0, 0.0, 0.0);
 
 /** @global Elapsed tick */
 var t = 0; 
@@ -49,12 +62,34 @@ function getGLContext(canvas) {
      return context;
 }
 
+function draw(vertexBuffer) {
+  bufferGeometry(vertexBuffer);
+  //gl.drawElements(gl.TRIANGLES, ,num)
+  /* Generate view */
+  generateView();
+
+  /* Draw terrain */
+
+  /* Set terrain in front of view */
+}
+
+/**
+ * Generate lookAt vector and initialize MV matrix with calculated view
+ */
+function generateView() {
+  /* Look down -z; viewPt, eyePt, viewDir*/
+  vec3.add(viewPt, eyePt, viewDir);
+  mat4.lookAt(mvMatrix, eyePt, viewPt, up);
+
+  return mvMatrix;
+}
+
 /**
  * Buffer vertices for geometry
  * @param {Array} positions 
  */
 function bufferGeometry(positions) {
-  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+  gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 }
 
@@ -64,19 +99,21 @@ function bufferGeometry(positions) {
 function initializeBuffers() {
   var positionAttributeLocation = gl.getAttribLocation(shaderProgram, "a_position");
   var colorAttributeLocation = gl.getAttribLocation(shaderProgram, "a_color");
-  positionBuffer = gl.createBuffer();
+  vertexBuffer = gl.createBuffer();
   colorBuffer = gl.createBuffer();
 
    // Tell WebGL how to convert from clip space to pixels
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
   // Clear canvas
   gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  gl.enable(gl.DEPTH_TEST);
   gl.useProgram(shaderProgram);
   // Set window resolution
   gl.uniform2f(gl.getUniformLocation(shaderProgram, "u_resolution"), gl.canvas.width, gl.canvas.height);
   
   // Enable vertex buffers
-  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+  gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
   gl.enableVertexAttribArray(positionAttributeLocation);
   // 2 components per iteration
   gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
@@ -158,6 +195,5 @@ function startup() {
   initializeTerrain();
   initializeShaderProgram();
   initializeBuffers();
-  gl.clearColor(1.0, 1.0, 1.0, 1.0);
-  tick();
+  gl.clear(gl.COLOR_BUFFER_BIT);
 }
