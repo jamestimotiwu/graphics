@@ -38,6 +38,7 @@ var defAngle = 0;
 /** @global Angle of rotation around y axis for view*/
 var viewRot = 10;
 
+
 /** View globals */
 /** @global Camera location in world coordinates */
 var eyePt = vec3.fromValues(0.0, 0.0, 0.0);
@@ -51,9 +52,9 @@ var up = vec3.fromValues(0.0, 1.0, 0.0);
 /** @global Location of pt along view direction in world coordinates */
 var viewPt = vec3.fromValues(0.0, 0.0, 0.0);
 
+
 /** @global Elapsed tick */
 var t = 0; 
-
 
 /** Lighting parameters */
 /** @global Light position in VIEW coordinates */
@@ -116,8 +117,8 @@ function draw() {
   mvPush();
   vec3.set(transformVec,0.0,-0.25,-2.0);
   mat4.translate(mvMatrix, mvMatrix,transformVec);
-  mat4.rotateY(mvMatrix, mvMatrix, degToRad(viewRot));
-  mat4.rotateX(mvMatrix, mvMatrix, degToRad(-75));
+  mat4.rotateY(mvMatrix, mvMatrix, degToRad(viewRot + 30));
+  mat4.rotateX(mvMatrix, mvMatrix, degToRad(-70));
   
   setShaderModelView();
   setShaderNormal();
