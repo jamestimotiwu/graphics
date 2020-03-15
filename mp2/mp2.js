@@ -119,7 +119,8 @@ function draw() {
   generateView();
   /* Set terrain in front of view */
   mvPush(mvMatrix);
-  vec3.set(transformVec,0.0,-0.25,-3.0);
+  vec3.set(transformVec,0.0,-0.25, -0.3);
+  //vec3.set(position, 0, -0.25, position[2] + 0.01)
   mat4.translate(mvMatrix, mvMatrix,transformVec);
   mat4.rotateY(mvMatrix, mvMatrix, degToRad(viewRot + 30));
   mat4.rotateX(mvMatrix, mvMatrix, degToRad(-70));
@@ -132,9 +133,7 @@ function draw() {
   
   setLightUniforms(lightPosition,lAmbient,lDiffuse,lSpecular);
   setMaterialUniforms(shininess,kAmbient,kTerrainDiffuse,kSpecular);
-  
   drawTerrain();
-  
 }
 
 /**
@@ -341,20 +340,10 @@ document.addEventListener('keydown', keyboardHandler);
 /** Current euler angle values */
 var rollAngle = 0;
 var pitchAngle = 0;
-var velocity = 0;
+var velocity = 0.2;
+var positionVec = vec3.fromValues(0.0, -0.25, -3.0);
 
-const keys = {
-  ArrowUp: 'up',
-  KeyW: 'up',
-  ArrowDown: 'down',
-  KeyS: 'down',
-  ArrowLeft: 'left',
-  KeyA: 'left',
-  ArrowRight: 'right',
-  KeyD: 'right',
-  Backspace: 'back'
-}
-
+/** Keyboard event handler  */
 function keyboardHandler(evt) {
   console.log(evt.code);
   // Roll left -> left arrow
@@ -376,31 +365,40 @@ function keyboardHandler(evt) {
   if (evt.code == "ArrowDown") {
     pitchAngle -= 1;
   }
+
   console.log("Pitch angle: " + pitchAngle);
   console.log("Roll angle: " + rollAngle);
 
   // Increase speed -> +
+  if (evt.code == "Equal") {
+    velocity += 1;
+  }  
 
   // Decrease speed -> -
+  if (evt.code == "Minus") {
+    velocity -= 1;
+  }
 }
 
 /** Flight simulator view update */
 function tick() {
   requestAnimationFrame(tick);
-  /** Set up MV matrix */
-  
+
   /** Euler to quaternion */
+  quat.fromEuler(quatOrientation, pitchAngle, rollAngle, 0);
   
+  mvPush(mvMatrix);
+  vec3.set(positionVec, positionVec[0], positionVec[1], positionVec[2] += 0.01);
+  mat4.translate(mvMatrix, mvMatrix, positionVec);
+
+  setShaderModelView();
+  setShaderNormal(mvMatrix);
+  mvPop();
+
+  setShaderProjection();
+  // draw call
+  drawTerrain();
   /** Quaternion to euler */
-  
-  /** Update quaternion with euler key presses */
-
-
-  //flight
-
-  // pitch
-
-  // roll
 }
 
 /**
