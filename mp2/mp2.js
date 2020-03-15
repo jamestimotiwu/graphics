@@ -336,9 +336,11 @@ function startup() {
 }
 
 /** Keyboard handler */
-document.addEventListener('keydown', evt => {
+document.addEventListener('keydown', keyboardHandler);
+
+function keyboardHandler(evt) {
   console.log(evt.code);
-})
+}
 
 /** Flight simulator view update */
 function tick() {
