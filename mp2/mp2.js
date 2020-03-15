@@ -338,8 +338,50 @@ function startup() {
 /** Keyboard handler */
 document.addEventListener('keydown', keyboardHandler);
 
+/** Current euler angle values */
+var rollAngle = 0;
+var pitchAngle = 0;
+var velocity = 0;
+
+const keys = {
+  ArrowUp: 'up',
+  KeyW: 'up',
+  ArrowDown: 'down',
+  KeyS: 'down',
+  ArrowLeft: 'left',
+  KeyA: 'left',
+  ArrowRight: 'right',
+  KeyD: 'right',
+  Backspace: 'back'
+}
+
 function keyboardHandler(evt) {
   console.log(evt.code);
+  // Roll left -> left arrow
+  if (evt.code == "ArrowLeft") {
+    rollAngle -= 1;
+  }
+
+  // Roll right -> right arrow
+  if (evt.code == "ArrowRight") {
+    rollAngle += 1;
+  }
+
+  // Pitch up -> up arrow
+  if (evt.code == "ArrowUp") {
+    pitchAngle += 1;
+  }
+
+  // Pitch down -> down arrow
+  if (evt.code == "ArrowDown") {
+    pitchAngle -= 1;
+  }
+  console.log("Pitch angle: " + pitchAngle);
+  console.log("Roll angle: " + rollAngle);
+
+  // Increase speed -> +
+
+  // Decrease speed -> -
 }
 
 /** Flight simulator view update */
