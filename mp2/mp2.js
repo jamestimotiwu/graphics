@@ -45,7 +45,7 @@ var quatOrientation = quat.create();
 
 /** View globals */
 /** @global Camera location in world coordinates */
-var eyePt = vec3.fromValues(0.0, 0.0, 0.0);
+var eyePt = vec3.fromValues(0.0, 0.3, 2.0);
 
 /** @global Direction of view in world coordinates (down -z axis)*/
 var viewDir = vec3.fromValues(0.0, 0.0, -1.0);
@@ -402,10 +402,6 @@ function tick() {
 
   vec3.transformQuat(up, up, quatOrientation);
   vec3.transformQuat(viewDir, viewDir, quatOrientation);
-
-  let translation = vec3.fromValues(0.0,0.0, -3.0);
-  vec3.scale(translation, viewDir, velocity);
-  vec3.add(eyePt, eyePt, translation);
 
   generateView();
   
