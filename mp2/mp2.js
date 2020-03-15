@@ -84,6 +84,10 @@ var kEdgeBlack = [0.0,0.0,0.0];
 /** @global Edge color for wireframe rendering */
 var kEdgeWhite = [1.0,1.0,1.0];
 
+
+/** @global Fog density */
+var fogDensity = 3.0
+
 /**
  * Get WebGL context for canvas
  * @param {element} canvas canvas
@@ -133,6 +137,7 @@ function draw() {
   setShaderProjection();
   
   setLightUniforms(lightPosition,lAmbient,lDiffuse,lSpecular);
+  //setFogUniform(fogDensity);
   setMaterialUniforms(shininess,kAmbient,kTerrainDiffuse,kSpecular);
   drawTerrain();
 }
@@ -263,7 +268,7 @@ function initializeUniforms() {
   shaderProgram.uniformAmbientMaterialColorLoc = gl.getUniformLocation(shaderProgram, "uKAmbient");  
   shaderProgram.uniformDiffuseMaterialColorLoc = gl.getUniformLocation(shaderProgram, "uKDiffuse");
   shaderProgram.uniformSpecularMaterialColorLoc = gl.getUniformLocation(shaderProgram, "uKSpecular");
-  shaderProgram.uniformShininessLoc = gl.getUniformLocation(shaderProgram, "uFogDensity");
+  //shaderProgram.uniformFogDensityLoc = gl.getUniformLocation(shaderProgram, "uFogDensity");
 }
 
 /**
@@ -295,7 +300,7 @@ function setLightUniforms(loc,a,d,s) {
 }
 
 function setFogUniform(fog_density) {
-  gl.uniform3fv(shaderProgram.uniformFogDensityLoc, fog_density);
+  //gl.uniform1f(shaderProgram.uniformFogDensityLoc, fog_density);
 }
 
 /**
@@ -395,17 +400,21 @@ function tick() {
   //quat.fromEuler(quatOrientation, pitchAngle, rollAngle, 0);
   quat.fromEuler(quatOrientation, pitchAngle, 0.0, rollAngle);
 
-  vec3.cross(pitchVec, viewDir, up);
-
   vec3.transformQuat(up, up, quatOrientation);
   vec3.transformQuat(viewDir, viewDir, quatOrientation);
+
+  let translation = vec3.fromValues(0.0,0.0, -3.0);
+  vec3.scale(translation, viewDir, velocity);
+  vec3.add(eyePt, eyePt, translation);
+
   generateView();
   
   mvPush(mvMatrix);
-  vec3.set(positionVec, positionVec[0], positionVec[1], positionVec[2] += velocity);
-  mat4.translate(mvMatrix, mvMatrix, positionVec);
-  //mat4.rotateY(mvMatrix, mvMatrix, degToRad(viewRot + 30));
-  //mat4.rotateX(mvMatrix, mvMatrix, degToRad(-70));
+  //vec3.set(positionVec, positionVec[0], positionVec[1], positionVec[2] += velocity);
+  //mat4.translate(mvMatrix, mvMatrix, positionVec);
+  mat4.rotateY(mvMatrix, mvMatrix, degToRad(viewRot + 30));
+  mat4.rotateX(mvMatrix, mvMatrix, degToRad(-70));
+
   setShaderModelView();
   setShaderNormal(mvMatrix);
   mvPop();
