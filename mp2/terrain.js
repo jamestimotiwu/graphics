@@ -3,7 +3,7 @@
  * @author James Timotiwu <jit2@illinois.edu>
 */
 
-const { mat4, mat3, vec3 } = glMatrix;
+//const { mat4, mat3, vec3, quat } = glMatrix;
 
 /* Vertex buffer */
 var vertexBuffer = [];

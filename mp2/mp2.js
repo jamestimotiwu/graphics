@@ -3,6 +3,8 @@
  * @author James Timotiwu <jit2@illinois.edu>
  */
 
+const { mat4, mat3, vec3, quat } = glMatrix;
+
 /** Rendering globals */
 /** @global WebGL context */
 var gl;
@@ -38,6 +40,8 @@ var defAngle = 0;
 /** @global Angle of rotation around y axis for view*/
 var viewRot = 10;
 
+/** @global Quaternion for rotations and view movement */
+var quatOrientation = quat.create();
 
 /** View globals */
 /** @global Camera location in world coordinates */
@@ -50,7 +54,7 @@ var viewDir = vec3.fromValues(0.0, 0.0, -1.0);
 var up = vec3.fromValues(0.0, 1.0, 0.0);
 
 /** @global Location of pt along view direction in world coordinates */
-var viewPt = vec3.fromValues(0.0, 0.0, 0.0);
+var viewPt = vec3.fromValues(0.0, 0.0, 1.0);
 
 
 /** @global Elapsed tick */
@@ -114,22 +118,23 @@ function draw() {
   /* Generate view */
   generateView();
   /* Set terrain in front of view */
-  mvPush();
-  vec3.set(transformVec,0.0,-0.25,-2.0);
+  mvPush(mvMatrix);
+  vec3.set(transformVec,0.0,-0.25,-3.0);
   mat4.translate(mvMatrix, mvMatrix,transformVec);
   mat4.rotateY(mvMatrix, mvMatrix, degToRad(viewRot + 30));
   mat4.rotateX(mvMatrix, mvMatrix, degToRad(-70));
   
   setShaderModelView();
-  setShaderNormal();
-  setShaderProjection();
+  setShaderNormal(mvMatrix);
+  mvPop();
 
+  setShaderProjection();
+  
   setLightUniforms(lightPosition,lAmbient,lDiffuse,lSpecular);
   setMaterialUniforms(shininess,kAmbient,kTerrainDiffuse,kSpecular);
-
+  
   drawTerrain();
-
-  mvPop();
+  
 }
 
 /**
@@ -149,9 +154,10 @@ function setShaderProjection() {
 
 /**
  * Pass shader normals in global to shader programs
+ * @param {*} viewMatrix 
  */
-function setShaderNormal() {
-  mat3.fromMat4(nMatrix,mvMatrix);
+function setShaderNormal(viewMatrix) {
+  mat3.fromMat4(nMatrix,viewMatrix);
   mat3.transpose(nMatrix,nMatrix);
   mat3.invert(nMatrix,nMatrix);
   console.log(nMatrix);
@@ -178,8 +184,8 @@ function generateView() {
 
 /** mvMatrix Stack Operations */
 /** mvMatrix stack push operation */
-function mvPush() {
-  let copy = mat4.clone(mvMatrix);
+function mvPush(matrix) {
+  let copy = mat4.clone(matrix);
   mvMatrixStack.push(copy);
 }
 
@@ -326,12 +332,31 @@ function startup() {
   initializeTerrain();
   gl.clear(gl.COLOR_BUFFER_BIT);
   draw();
-  //tick();
+  tick();
 }
 
+/** Keyboard handler */
+document.addEventListener('keydown', evt => {
+  console.log(evt.code);
+})
+
+/** Flight simulator view update */
 function tick() {
   requestAnimationFrame(tick);
-  draw();
+  /** Set up MV matrix */
+  
+  /** Euler to quaternion */
+  
+  /** Quaternion to euler */
+  
+  /** Update quaternion with euler key presses */
+
+
+  //flight
+
+  // pitch
+
+  // roll
 }
 
 /**
