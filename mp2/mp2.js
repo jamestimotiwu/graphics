@@ -86,7 +86,7 @@ var kEdgeWhite = [1.0,1.0,1.0];
 
 
 /** @global Fog density */
-var fogDensity = 3.0
+var fogDensity = 0.6
 
 /**
  * Get WebGL context for canvas
@@ -137,7 +137,7 @@ function draw() {
   setShaderProjection();
   
   setLightUniforms(lightPosition,lAmbient,lDiffuse,lSpecular);
-  //setFogUniform(fogDensity);
+  setFogUniform(fogDensity);
   setMaterialUniforms(shininess,kAmbient,kTerrainDiffuse,kSpecular);
   drawTerrain();
 }
@@ -268,7 +268,7 @@ function initializeUniforms() {
   shaderProgram.uniformAmbientMaterialColorLoc = gl.getUniformLocation(shaderProgram, "uKAmbient");  
   shaderProgram.uniformDiffuseMaterialColorLoc = gl.getUniformLocation(shaderProgram, "uKDiffuse");
   shaderProgram.uniformSpecularMaterialColorLoc = gl.getUniformLocation(shaderProgram, "uKSpecular");
-  //shaderProgram.uniformFogDensityLoc = gl.getUniformLocation(shaderProgram, "uFogDensity");
+  shaderProgram.uniformFogDensityLoc = gl.getUniformLocation(shaderProgram, "uFogDensity");
 }
 
 /**
@@ -299,8 +299,12 @@ function setLightUniforms(loc,a,d,s) {
   gl.uniform3fv(shaderProgram.uniformSpecularLightColorLoc, s);
 }
 
+/**
+ * Sets fog density for the shader to properly mix fog
+ * @param {} fog_density 
+ */
 function setFogUniform(fog_density) {
-  //gl.uniform1f(shaderProgram.uniformFogDensityLoc, fog_density);
+  gl.uniform1f(shaderProgram.uniformFogDensityLoc, fog_density);
 }
 
 /**
@@ -356,15 +360,14 @@ var positionVec = vec3.fromValues(0.0, -0.25, -3.0);
 
 /** Keyboard event handler  */
 function keyboardHandler(evt) {
-  console.log(evt.code);
   // Roll left -> left arrow
   if (evt.code == "ArrowLeft") {
-    rollAngle -= 0.2;
+    rollAngle += 0.2;
   }
 
   // Roll right -> right arrow
   if (evt.code == "ArrowRight") {
-    rollAngle += 0.2;
+    rollAngle -= 0.2;
   }
 
   // Pitch up -> up arrow
@@ -382,6 +385,7 @@ function keyboardHandler(evt) {
 
   // Increase speed -> +
   if (evt.code == "Equal") {
+    // Camera travels down -z axis, so "negative" velocity when moving forward
     velocity += 0.001;
   }  
 
@@ -394,20 +398,23 @@ function keyboardHandler(evt) {
 /** Flight simulator view update */
 function tick() {
   requestAnimationFrame(tick);
-  let pitchVec = vec3.create();
+  let translationVec = vec3.create();
 
   /** Euler to quaternion */
-  //quat.fromEuler(quatOrientation, pitchAngle, rollAngle, 0);
   quat.fromEuler(quatOrientation, pitchAngle, 0.0, rollAngle);
-
   vec3.transformQuat(up, up, quatOrientation);
   vec3.transformQuat(viewDir, viewDir, quatOrientation);
 
+  // Scale by view direction so camera travels towards eyepoint
+  vec3.scale(translationVec, viewDir, velocity);
+  vec3.add(eyePt, eyePt, translationVec);
+
+  // Update view vectors (up, viewDir, eyePt)
   generateView();
   
   mvPush(mvMatrix);
-  //vec3.set(positionVec, positionVec[0], positionVec[1], positionVec[2] += velocity);
-  //mat4.translate(mvMatrix, mvMatrix, positionVec);
+
+  // Standard view matrix
   mat4.rotateY(mvMatrix, mvMatrix, degToRad(viewRot + 30));
   mat4.rotateX(mvMatrix, mvMatrix, degToRad(-70));
 
@@ -417,15 +424,8 @@ function tick() {
 
   setShaderProjection();
 
-  // draw call
+  // Draw call
   drawTerrain();
-  /** Quaternion to euler */
-
-  //flight
-
-  // pitch
-
-  // roll
 }
 
 /**
