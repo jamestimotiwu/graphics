@@ -424,6 +424,15 @@ function tick() {
 
   setShaderProjection();
 
+  // Check if fog should be enabled
+  if(document.getElementById('r1').checked) {
+    fogDensity = 0.6;
+  } else {
+    fogDensity = 0.0
+  }
+
+  setFogUniform(fogDensity);
+
   // Draw call
   drawTerrain();
 }

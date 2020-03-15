@@ -94,6 +94,7 @@
             
             float specularLightWeightning = pow(hdotn, uShininess);
 
+            // Add fog parameters
             float fogCoord = (gl_FragCoord.z/gl_FragCoord.w);
             float log2 = 1.442695;
             float fogDensity = uFogDensity;
@@ -114,6 +115,19 @@
     <script src="terrain.js"></script>
     <script src="mp2.js"></script>
     <body onload="startup();">
-        <canvas id="mp1GLCanvas" width="800" height="700"></canvas>
+        <canvas id="mp1GLCanvas" width="800" height="600"></canvas>
+    </body>
+    <body overflow-y=hidden>
+        <p>
+            Press left arrow key to roll plane to left. <br>
+            Press right arrow key to roll plane to right. <br>
+            Press up arrow key to pitch plane up. <br>
+            Press down arrow key to pitch plane down. <br>
+            Press +/- to increase/decrease speed. <br>
+        </p>
+        <div id="animationToggle">
+            Enable fog:
+            <input type="checkbox" id="r1" name="Animation" value=1 checked="checked">
+        </div>
     </body>
 </html>
