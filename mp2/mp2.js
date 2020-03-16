@@ -354,34 +354,30 @@ document.addEventListener('keydown', keyboardHandler);
 
 /** Current euler angle values */
 var rollAngle = 0.0;
-var pitchAngle = 0;
+var pitchAngle = 0.0;
 var velocity = 0.001;
-var positionVec = vec3.fromValues(0.0, -0.25, -3.0);
 
 /** Keyboard event handler  */
 function keyboardHandler(evt) {
   // Roll left -> left arrow
   if (evt.code == "ArrowLeft") {
-    rollAngle += 0.2;
+    rollAngle += 0.05;
   }
 
   // Roll right -> right arrow
   if (evt.code == "ArrowRight") {
-    rollAngle -= 0.2;
+    rollAngle -= 0.05;
   }
 
   // Pitch up -> up arrow
   if (evt.code == "ArrowUp") {
-    pitchAngle += 0.2;
+    pitchAngle += 0.05;
   }
 
   // Pitch down -> down arrow
   if (evt.code == "ArrowDown") {
-    pitchAngle -= 0.2;
+    pitchAngle -= 0.05;
   }
-
-  console.log("Pitch angle: " + pitchAngle);
-  console.log("Roll angle: " + rollAngle);
 
   // Increase speed -> +
   if (evt.code == "Equal") {
@@ -430,6 +426,9 @@ function tick() {
   } else {
     fogDensity = 0.0
   }
+
+  // Display pitch on html
+  document.getElementById("pitch").innerHTML = "Pitch: " + pitchAngle + " Roll: " + rollAngle + " Speed: " + velocity * 1000;
 
   setFogUniform(fogDensity);
 
