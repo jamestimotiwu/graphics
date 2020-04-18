@@ -46,7 +46,7 @@ var quatOrientation = quat.create();
 
 /** View globals */
 /** @global Camera location in world coordinates */
-var eyePt = vec3.fromValues(0.0, 0.0, 4.0);
+var eyePt = vec3.fromValues(0.0, 0.0, 1.0);
 
 /** @global Direction of view in world coordinates (down -z axis)*/
 var viewDir = vec3.fromValues(0.0, 0.0, -1.0);
@@ -123,11 +123,11 @@ function draw() {
   /* Generate view */
   generateView();
   /* Set terrain in front of view */
-  vec3.set(transformVec,0.0,-0.25, -0.3);
+  vec3.set(transformVec,0.0,0.0, 0.0);
   //vec3.set(position, 0, -0.25, position[2] + 0.01)
-  mat4.translate(mvMatrix, mvMatrix,transformVec);
+  //mat4.translate(mvMatrix, mvMatrix,transformVec);
   mat4.rotateY(mvMatrix, mvMatrix, degToRad(viewRot + 30));
-  mat4.rotateX(mvMatrix, mvMatrix, degToRad(-70));
+  //mat4.rotateX(mvMatrix, mvMatrix, degToRad(-70));
  
   gl.useProgram(shaderProgram);
   setShaderModelView();
@@ -141,7 +141,6 @@ function draw() {
   gl.useProgram(skyboxShaderProgram);
   setSkyboxShaderModelView();
   setSkyboxShaderProjection();
-
   drawCube();
 }
 
@@ -386,12 +385,11 @@ function startup() {
   //initializeTerrain();
   initializeCube();
   textureCube();
-  draw();
   tick();
 }
 
 /** Keyboard handler */
-//document.addEventListener('keydown', keyboardHandler);
+document.addEventListener('keydown', keyboardHandler);
 
 /** Current euler angle values */
 var rollAngle = 0.0;
@@ -402,12 +400,12 @@ var velocity = 0.001;
 function keyboardHandler(evt) {
   // Roll left -> left arrow
   if (evt.code == "ArrowLeft") {
-    rollAngle += 0.05;
+    viewRot -= 1.0;
   }
 
   // Roll right -> right arrow
   if (evt.code == "ArrowRight") {
-    rollAngle -= 0.05;
+    viewRot += 1.0;
   }
 
   // Pitch up -> up arrow

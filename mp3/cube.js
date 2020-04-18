@@ -17,9 +17,9 @@ var normBufProgram;
 var numNorms;
 
 function generateCube(length) {
-	let x = length / 2;
-	let y = length / 2;
-	let z = length / 2;
+	let x = length / 2.0;
+	let y = length / 2.0;
+	let z = length / 2.0;
 	
 	/* Dummy vertex */
 	vertexBuffer.push(0,0,0);
@@ -59,7 +59,7 @@ function generateCube(length) {
 	/* -z */
 	triBuffer.push(8, 5, 6);
 	triBuffer.push(6, 7, 8);
-
+	console.log(vertexBuffer);
 	numVertices = vertexBuffer.length / 3;
 	numFaces = triBuffer.length / 3;
 }
@@ -97,7 +97,6 @@ function textureCube() {
 	faceInfos.forEach((faceInfo) => {
 		const {target, url} = faceInfo;
 	
-		// Upload the canvas to the cubemap face.
 		const level = 0;
 		const internalFormat = gl.RGBA;
 		const width = 512;
@@ -105,15 +104,12 @@ function textureCube() {
 		const format = gl.RGBA;
 		const type = gl.UNSIGNED_BYTE;
 	
-		// setup each face so it's immediately renderable
 		gl.texImage2D(target, level, internalFormat, width, height, 0, format, type, null);
 	
-		// Asynchronously load an image
 		const image = new Image();
 		image.src = url;
 		
 		image.addEventListener('load', function() {
-			// Now that the image has loaded make copy it to the texture.
 			gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
 			gl.texImage2D(target, level, internalFormat, format, type, image);
 			gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
@@ -127,7 +123,7 @@ function textureCube() {
 }
 
 function initializeCube() {
-	let len = 1.0;
+	let len = 3.0;
 	generateCube(len);
     var ext = gl.getExtension('OES_element_index_uint');
     if (ext ==null){

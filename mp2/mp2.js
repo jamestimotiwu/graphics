@@ -165,7 +165,6 @@ function setShaderNormal(viewMatrix) {
   mat3.fromMat4(nMatrix,viewMatrix);
   mat3.transpose(nMatrix,nMatrix);
   mat3.invert(nMatrix,nMatrix);
-  console.log(nMatrix);
   gl.uniformMatrix3fv(shaderProgram.nMatrixUniform, false, nMatrix);
 }
 
