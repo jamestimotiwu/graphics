@@ -382,12 +382,12 @@ function startup() {
   initializeBuffers();
   initializeSkyboxShaderProgram();
 
+  //gl.clear(gl.COLOR_BUFFER_BIT);
   //initializeTerrain();
   initializeCube();
   textureCube();
-  gl.clear(gl.COLOR_BUFFER_BIT);
   draw();
-  //tick();
+  tick();
 }
 
 /** Keyboard handler */
@@ -435,32 +435,6 @@ function keyboardHandler(evt) {
 /** Flight simulator view update */
 function tick() {
   requestAnimationFrame(tick);
-  let translationVec = vec3.create();
-
-  /** Euler to quaternion */
-  quat.fromEuler(quatOrientation, pitchAngle, 0.0, rollAngle);
-  vec3.transformQuat(up, up, quatOrientation);
-  vec3.transformQuat(viewDir, viewDir, quatOrientation);
-
-  // Scale by view direction so camera travels towards eyepoint
-  vec3.scale(translationVec, viewDir, velocity);
-  vec3.add(eyePt, eyePt, translationVec);
-
-  // Update view vectors (up, viewDir, eyePt)
-  generateView();
-  
-  mvPush(mvMatrix);
-
-  // Standard view matrix
-  mat4.rotateY(mvMatrix, mvMatrix, degToRad(viewRot + 30));
-  mat4.rotateX(mvMatrix, mvMatrix, degToRad(-70));
-
-  setShaderModelView();
-  setShaderNormal(mvMatrix);
-  mvPop();
-
-  setShaderProjection();
-
   // Check if fog should be enabled
   if(document.getElementById('r1').checked) {
     fogDensity = 0.6;
@@ -470,13 +444,8 @@ function tick() {
 
   // Display pitch on html
   document.getElementById("pitch").innerHTML = "Pitch: " + pitchAngle + " Roll: " + rollAngle + " Speed: " + velocity * 1000;
-
-  setFogUniform(fogDensity);
-
-  textureCube();
   // Draw call
-  //drawTerrain();
-  drawCube();
+  draw();
 }
 
 /**
