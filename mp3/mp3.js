@@ -341,6 +341,7 @@ function startup() {
   initializeBuffers();
   //initializeTerrain();
   initializeCube();
+  textureCube();
   gl.clear(gl.COLOR_BUFFER_BIT);
   draw();
   //tick();

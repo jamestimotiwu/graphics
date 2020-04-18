@@ -12,6 +12,10 @@ var triBuffer = [];
 var triBufProgram;
 var numFaces;
 
+var normalBuffer = [];
+var normBufProgram;
+var numNorms;
+
 function generateCube(length) {
 	let x = length / 2;
 	let y = length / 2;
@@ -58,6 +62,73 @@ function generateCube(length) {
 
 	numVertices = vertexBuffer.length / 3;
 	numFaces = triBuffer.length / 3;
+}
+
+function textureCube() {
+	var texture = gl.createTexture();
+	gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+	
+	const faces = [
+		{
+			target: gl.TEXTURE_CUBE_MAP_POSITIVE_X,
+			url: 'London/pos-x.png',
+		},
+		{
+			target: gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
+			url: 'London/neg-x.png',
+		},
+		{
+			target: gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
+			url: 'London/pos-y.png',
+		},
+		{
+			target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
+			url: 'London/neg-y.png',
+		},
+		{
+			target: gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
+			url: 'London/pos-z.png',
+		},
+		{
+			target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z,
+			url: 'London/neg-z.png',
+		},
+	];
+	faces.forEach((face) => {
+	const {target, url} = face;
+
+	// Setup canvas
+	const level = 0;
+	const internalFormat = gl.RGBA;
+	const width = 512;
+	const height = 512;
+	const format = gl.RGBA;
+	const type = gl.UNSIGNED_BYTE;
+
+	// Create texture
+	gl.texImage2D(gl.TEXTURE_2D,
+				0, 
+				gl.RGBA, 
+				512,
+				512,
+				0,
+				gl.RGBA,
+				gl.UNSIGNED_BYTE,
+				null);
+	
+	/* Load images */
+	const image = new Image();
+	image.src = url;
+	image.addEventListener('load', function() {
+		gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+		gl.texImage2D(target, level, internalFormat, format, type, image);
+		gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+	});
+});
+	gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+	gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP, LINEAR);
+		
+
 }
 
 function initializeCube() {
