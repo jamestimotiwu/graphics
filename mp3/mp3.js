@@ -128,7 +128,8 @@ function draw() {
   mat4.translate(mvMatrix, mvMatrix,transformVec);
   mat4.rotateY(mvMatrix, mvMatrix, degToRad(viewRot + 30));
   mat4.rotateX(mvMatrix, mvMatrix, degToRad(-70));
-  
+ 
+  gl.useProgram(shaderProgram);
   setShaderModelView();
   setShaderNormal(mvMatrix);
   setShaderProjection();
@@ -137,6 +138,10 @@ function draw() {
   setFogUniform(fogDensity);
   setMaterialUniforms(shininess,kAmbient,kTerrainDiffuse,kSpecular);
   //drawTerrain();
+  gl.useProgram(skyboxShaderProgram);
+  setSkyboxShaderModelView();
+  setSkyboxShaderProjection();
+
   drawCube();
 }
 
@@ -155,6 +160,13 @@ function setShaderProjection() {
   gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
 }
 
+function setSkyboxShaderModelView() {
+  gl.uniformMatrix4fv(skyboxShaderProgram.mvMatrixUniform, false, mvMatrix);
+}
+
+function setSkyboxShaderProjection() {
+	gl.uniformMatrix4fv(skyboxShaderProgram.pMatrixUniform, false, pMatrix);
+}
 /**
  * Pass shader normals in global to shader programs
  * @param {*} viewMatrix 
@@ -241,7 +253,7 @@ function initializeShaderProgram() {
     gl.useProgram(shaderProgram);
     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "a_vertex");
     gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-	shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "a_normal");
+	//shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "a_normal");
     gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
     initializeUniforms();
     return shaderProgram;
@@ -266,11 +278,16 @@ function initializeSkyboxShaderProgram() {
   if (gl.getProgramParameter(skyboxShaderProgram, gl.LINK_STATUS)) {
 	gl.useProgram(skyboxShaderProgram);
 	skyboxShaderProgram.vertexPositionAttribute = gl.getAttribLocation(skyboxShaderProgram, "a_vertex");
-	gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-
+	gl.enableVertexAttribArray(skyboxShaderProgram.vertexPositionAttribute);
+	initializeSkyUniforms();
     return skyboxShaderProgram;
   }
 
+}
+
+function initializeSkyUniforms() {
+  skyboxShaderProgram.mvMatrixUniform = gl.getUniformLocation(skyboxShaderProgram, "uMVMatrix");
+  skyboxShaderProgram.pMatrixUniform = gl.getUniformLocation(skyboxShaderProgram, "uPMatrix");
 }
 
 /**
@@ -370,7 +387,7 @@ function startup() {
   textureCube();
   gl.clear(gl.COLOR_BUFFER_BIT);
   draw();
-  tick();
+  //tick();
 }
 
 /** Keyboard handler */
