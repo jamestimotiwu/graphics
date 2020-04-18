@@ -5,6 +5,32 @@
         <meta charset="utf-8">
     </head>
 
+	<script id="skybox-vertex-shader" type="x-shader">
+		attribute vec3 a_vertex;
+		attribute vec3 a_normal;
+		
+		uniform mat4 uMVMatrix;
+		uniform mat4 uPMatrix;
+
+		varying vec3 v_vertex;
+
+		void main(void) {
+			gl_Position = uPMatrix * uMVMatrix * vec4(a_vertex, 1.0);
+			v_vertex = a_vertex;
+		}
+
+	</script>
+
+	<script id="skybox-fragment-shader" type="x-shader">
+		precision mediump float;
+		uniform samplerCube sampler;
+		varying vec3 v_vertex;
+
+		void main(void) {
+			gl_FragColor = textureCube(sampler, v_vertex);
+		}
+	</script>
+
     <script id="vertex-shader" type="x-shader">
         attribute vec3 a_vertex;
         attribute vec3 a_normal;

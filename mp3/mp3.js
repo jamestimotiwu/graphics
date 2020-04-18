@@ -11,6 +11,7 @@ var gl;
 
 /** @global Shader program */
 var shaderProgram;
+var skyboxShaderProgram;
 
 /** @global Position buffer */
 var vertexBuffer;
@@ -45,7 +46,7 @@ var quatOrientation = quat.create();
 
 /** View globals */
 /** @global Camera location in world coordinates */
-var eyePt = vec3.fromValues(0.0, 0.3, 3.0);
+var eyePt = vec3.fromValues(0.0, 0.0, 4.0);
 
 /** @global Direction of view in world coordinates (down -z axis)*/
 var viewDir = vec3.fromValues(0.0, 0.0, -1.0);
@@ -229,24 +230,47 @@ function initializeBuffers() {
 function initializeShaderProgram() {
   var vertexShader = initializeShader("vertex-shader", gl.VERTEX_SHADER)
   var fragmentShader = initializeShader("fragment-shader", gl.FRAGMENT_SHADER)
-
   console.log(vertexShader);
+
   shaderProgram = gl.createProgram();
   gl.attachShader(shaderProgram, vertexShader)
   gl.attachShader(shaderProgram, fragmentShader)
-  gl.linkProgram(shaderProgram)
+  gl.linkProgram(shaderProgram);
 
   if (gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
     gl.useProgram(shaderProgram);
     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "a_vertex");
     gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-    //shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "a_normal");
-    //gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
+	shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "a_normal");
+    gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
     initializeUniforms();
     return shaderProgram;
   }
 
   console.log("initializeShader: Error setting up shaders")
+}
+
+function initializeSkyboxShaderProgram() {
+
+/* Initialize skybox shaders */ 
+  var skyboxVertexShader = initializeShader("skybox-vertex-shader", gl.VERTEX_SHADER);
+
+  var skyboxFragmentShader = initializeShader("skybox-fragment-shader", gl.FRAGMENT_SHADER);
+
+  skyboxShaderProgram = gl.createProgram();
+  gl.attachShader(skyboxShaderProgram, skyboxVertexShader)
+  gl.attachShader(skyboxShaderProgram, skyboxFragmentShader)
+
+  gl.linkProgram(skyboxShaderProgram);
+
+  if (gl.getProgramParameter(skyboxShaderProgram, gl.LINK_STATUS)) {
+	gl.useProgram(skyboxShaderProgram);
+	skyboxShaderProgram.vertexPositionAttribute = gl.getAttribLocation(skyboxShaderProgram, "a_vertex");
+	gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+
+    return skyboxShaderProgram;
+  }
+
 }
 
 /**
@@ -339,12 +363,14 @@ function startup() {
   //initializeTerrain();
   initializeShaderProgram();
   initializeBuffers();
+  initializeSkyboxShaderProgram();
+
   //initializeTerrain();
   initializeCube();
   textureCube();
   gl.clear(gl.COLOR_BUFFER_BIT);
   draw();
-  //tick();
+  tick();
 }
 
 /** Keyboard handler */
@@ -430,9 +456,9 @@ function tick() {
 
   setFogUniform(fogDensity);
 
+  textureCube();
   // Draw call
   //drawTerrain();
-
   drawCube();
 }
 

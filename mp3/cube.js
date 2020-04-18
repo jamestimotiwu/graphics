@@ -68,67 +68,62 @@ function textureCube() {
 	var texture = gl.createTexture();
 	gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
 	
-	const faces = [
-		{
-			target: gl.TEXTURE_CUBE_MAP_POSITIVE_X,
-			url: 'London/pos-x.png',
-		},
-		{
-			target: gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
-			url: 'London/neg-x.png',
-		},
-		{
-			target: gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
-			url: 'London/pos-y.png',
-		},
-		{
-			target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
-			url: 'London/neg-y.png',
-		},
-		{
-			target: gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
-			url: 'London/pos-z.png',
-		},
-		{
-			target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z,
-			url: 'London/neg-z.png',
-		},
+	const faceInfos = [
+	{
+		target: gl.TEXTURE_CUBE_MAP_POSITIVE_X,
+		url: 'London/pos-x.png',
+	},
+	{
+		target: gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
+		url: 'London/neg-x.png',
+	},
+	{
+		target: gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
+		url: 'London/pos-y.png',
+	},
+	{
+		target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
+		url: 'London/neg-y.png',
+	},
+	{
+		target: gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
+		url: 'London/pos-z.png',
+	},
+	{
+		target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z,
+		url: 'London/neg-z.png',
+	},
 	];
-	faces.forEach((face) => {
-	const {target, url} = face;
-
-	// Setup canvas
-	const level = 0;
-	const internalFormat = gl.RGBA;
-	const width = 512;
-	const height = 512;
-	const format = gl.RGBA;
-	const type = gl.UNSIGNED_BYTE;
-
-	// Create texture
-	gl.texImage2D(gl.TEXTURE_2D,
-				0, 
-				gl.RGBA, 
-				512,
-				512,
-				0,
-				gl.RGBA,
-				gl.UNSIGNED_BYTE,
-				null);
+	faceInfos.forEach((faceInfo) => {
+		const {target, url} = faceInfo;
 	
-	/* Load images */
-	const image = new Image();
-	image.src = url;
-	image.addEventListener('load', function() {
-		gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
-		gl.texImage2D(target, level, internalFormat, format, type, image);
-		gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
-	});
-});
-	gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
-	gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP, LINEAR);
+		// Upload the canvas to the cubemap face.
+		const level = 0;
+		const internalFormat = gl.RGBA;
+		const width = 512;
+		const height = 512;
+		const format = gl.RGBA;
+		const type = gl.UNSIGNED_BYTE;
+	
+		// setup each face so it's immediately renderable
+		gl.texImage2D(target, level, internalFormat, width, height, 0, format, type, null);
+	
+		// Asynchronously load an image
+		const image = new Image();
+		image.src = url;
 		
-
+		image.addEventListener('load', function() {
+			// Now that the image has loaded make copy it to the texture.
+			gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+			gl.texImage2D(target, level, internalFormat, format, type, image);
+			gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+		});
+	});
+	gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+	gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+	
+	gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+	gl.activeTexture(gl.TEXTURE0);
 }
 
 function initializeCube() {
@@ -139,6 +134,7 @@ function initializeCube() {
         alert("OES_element_index_uint is unsupported by your browser and terrain generation cannot proceed.");
     }
 	initializeCubeBuffers();
+
 }
 
 function initializeCubeBuffers() {
@@ -158,7 +154,7 @@ function initializeCubeBuffers() {
 
 function drawCube () {
 	gl.bindBuffer(gl.ARRAY_BUFFER, vertexBufProgram);
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, vertexBufProgram.itemSize, 
+    gl.vertexAttribPointer(skyboxShaderProgram.vertexPositionAttribute, vertexBufProgram.itemSize, 
                      gl.FLOAT, false, 0, 0);
 
 	/* Draw triangles */
