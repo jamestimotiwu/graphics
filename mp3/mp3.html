@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Terrain</title>
+        <title>Teapot</title>
         <meta charset="utf-8">
     </head>
 
@@ -11,11 +11,12 @@
 		
 		uniform mat4 uMVMatrix;
 		uniform mat4 uPMatrix;
+		uniform mat4 uVMatrix;
 
 		varying vec3 v_vertex;
 
 		void main(void) {
-            gl_Position = uPMatrix*uMVMatrix*vec4(a_vertex, 1.0);
+            gl_Position = uPMatrix*uVMatrix*vec4(a_vertex, 1.0);
 			v_vertex = a_vertex;
 		}
 
@@ -30,38 +31,31 @@
 			gl_FragColor = textureCube(sampler, v_vertex);
 		}
 	</script>
+	
 
     <script id="vertex-shader" type="x-shader">
         attribute vec3 a_vertex;
         attribute vec3 a_normal;
         //attribute vec4 a_color
         
-        //varying vec4 v_color
         varying vec3 vectorToLightSource;
         varying vec3 normalEye;
         varying vec3 viewVectorEye;
         varying vec3 vDiffuse;
+		varying vec3 v_vertex;
 
         // Model-view matrix
         uniform vec3 uLightPosition;
         uniform mat4 uMVMatrix;
         uniform mat4 uPMatrix;
         uniform mat3 uNMatrix;
+		uniform mat4 uVMatrix;
+
+		// Check refraction or reflection enabled
+		uniform int uRefractionFlag;
+		uniform int uReflectionFlag;
 
         void main(void) {
-            float threshold1 = -0.02;
-            float threshold2 = 0.02;
-            float threshold3 = 0.04;
-        
-            if(a_vertex.z <= threshold1) {
-                vDiffuse = vec3(0.0, 0.0, 255.0/255.0);
-            } else if (a_vertex.z > threshold1 && a_vertex.z <= threshold2) {
-                vDiffuse = vec3(0.0, 255.0/255.0, 0.0);
-            } else if (a_vertex.z > threshold2 && a_vertex.z <= threshold3) {
-                vDiffuse = vec3(0.0, 255.0/255.0, 0.0);
-            } else {
-                vDiffuse = vec3(128.0/255.0, 128.0/255.0, 128.0/255.0);
-            }
 
             // Get the vertex position in eye coordinates
             vec4 vertexPositionEye4 = uMVMatrix * vec4(a_vertex, 1.0);
@@ -78,12 +72,18 @@
             // in eye coordinates as:
             // (0.0, 0.0, 0.0) - vertexPositionEye3
             viewVectorEye = -normalize(vertexPositionEye3);
+			v_vertex = reflect(vertexPositionEye3, normalEye);
+			//if (uRefractionFlag == 1) {
+			//	normalEye = refract(viewVectorEye, normalEye, 0.7);
+			//}
 
+			//if {uReflectionFlag == 1) {
+			//	normalEye = reflect(viewVectorEye, normalEye);
+			//}
             // Sum up all three reflection components and send to the fragment shader
             gl_Position = uPMatrix*uMVMatrix*vec4(a_vertex, 1.0);
         }
     </script>
-
     <script id="fragment-shader" type="x-shader">
         precision mediump float;
         //varying vec4 v_color;
@@ -92,6 +92,7 @@
         varying vec3 normalEye;
         varying vec3 viewVectorEye;
         varying vec3 vDiffuse;
+		varying vec3 v_vertex;
 
         uniform vec3 uAmbientLightColor;
         uniform vec3 uDiffuseLightColor;
@@ -102,6 +103,8 @@
         uniform vec3 uKSpecular;
         uniform float uShininess;
         uniform float uFogDensity;
+
+		uniform samplerCube uTexture;
 
         void main(void) {
             // Calculate n dot l for diffuse lighting
@@ -119,26 +122,18 @@
             float hdotn = max(dot(halfwayVector, normalEye), 0.2);
             
             float specularLightWeightning = pow(hdotn, uShininess);
-
-            // Add fog parameters
-            float fogCoord = (gl_FragCoord.z/gl_FragCoord.w);
-            float log2 = 1.442695;
-            float fogDensity = uFogDensity;
-            float fogFactor = exp2(-fogDensity*fogDensity*fogCoord*fogCoord*log2);
-            fogFactor = clamp(fogFactor, 0.0, 1.0);
-            vec4 fogColor = vec4(1.0,1.0,1.0,1.0);
         
             // Sum up all three reflection components and send to the fragment shader
             gl_FragColor = vec4(((uAmbientLightColor*uKAmbient)
                         + (uDiffuseLightColor*vDiffuse) * diffuseLightWeightning
                         + ((uSpecularLightColor*uKSpecular) * specularLightWeightning)),1.0);
-                        
-            gl_FragColor = mix(fogColor, gl_FragColor, fogFactor);
+            gl_FragColor = textureCube(uTexture, v_vertex); 
         }
     </script>
     <script src="gl-matrix-min.js"></script>
     <script type="text/javascript" src="webgl-utils.js"></script>
-    <script src="cube.js"></script>
+    <script src="TriMesh.js"></script>
+	<script src="cube.js"></script>
     <script src="mp3.js"></script>
     <body onload="startup();">
         <canvas id="mp1GLCanvas" width="800" height="800"></canvas>
@@ -146,11 +141,15 @@
     <body>
         <p id="pitch">Pitch: </p>
         <p>
-            Press left arrow key to roll plane to left. <br>
+            Press left or right arrow keys to orbit.. <br>
         </p>
         <div id="animationToggle">
-            Phong-Blinn
-            <input type="checkbox" id="r1" name="Animation" value=1 checked="checked">
+			Phong-Blinn
+            <input type="radio" id="r1" name="Animation" value=1 checked="checked">
+			Refraction
+            <input type="radio" id="r2" name="Animation" value=0> 
+			Reflection
+            <input type="radio" id="r2" name="Animation" value=0> 
         </div>
     </body>
 </html>

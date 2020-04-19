@@ -1,5 +1,5 @@
 /**
- * @file MP2 Terrain
+ * @file MP3 Environment Mapping
  * @author James Timotiwu <jit2@illinois.edu>
  */
 
@@ -55,7 +55,7 @@ var viewDir = vec3.fromValues(0.0, 0.0, -1.0);
 var up = vec3.fromValues(0.0, 1.0, 0.0);
 
 /** @global Location of pt along view direction in world coordinates */
-var viewPt = vec3.fromValues(0.0, 0.0, 1.0);
+var viewPt = vec3.fromValues(0.0, 0.0, 0.0);
 
 
 /** @global Elapsed tick */
@@ -63,11 +63,11 @@ var t = 0;
 
 /** Lighting parameters */
 /** @global Light position in VIEW coordinates */
-var lightPosition = [0,1,3];
+var lightPosition = [1,1,1];
 /** @global Ambient light color/intensity for Phong reflection */
 var lAmbient = [0.1,0.1,0.1];
 /** @global Diffuse light color/intensity for Phong reflection */
-var lDiffuse = [0.7,1.0,0.3];
+var lDiffuse = [1.0,1.0,1.0];
 /** @global Specular light color/intensity for Phong reflection */
 var lSpecular =[0.2,0.5,1.0];
 
@@ -89,6 +89,15 @@ var kEdgeWhite = [1.0,1.0,1.0];
 /** @global Fog density */
 var fogDensity = 0.6
 
+var myMesh;
+
+var reflectionFlag = 1;
+
+var refractionFlag = 0;
+
+var eulerY = 0;
+
+var vMatrix = mat4.create();
 /**
  * Get WebGL context for canvas
  * @param {element} canvas canvas
@@ -109,6 +118,38 @@ function getGLContext(canvas) {
      return context;
 }
 
+//----------------------------------------------------------------------------------
+/**
+ * Populate buffers with data
+ */
+function setupMesh(filename) {
+   //Your code here
+   myMesh = new TriMesh();
+   myPromise = asyncGetFile(filename);
+   
+   myPromise.then((retrievedText) => {
+	myMesh.loadFromOBJ(retrievedText);
+   })
+   .catch(
+	(reason) => {
+		console.log('Handle rejected promise ('+reason+')here.');
+	});
+}
+
+//-------------------------------------------------------------------------
+/**
+ * Asynchronously read a server-side text file
+ */
+function asyncGetFile(url) {
+	return new Promise((resolve, reject) => {
+		const xhr = new XMLHttpRequest();
+		xhr.open("GET", url);
+		xhr.onload = () => resolve(xhr.responseText);
+		xhr.onerror = () => reject(xhr.statusText);
+		xhr.send();
+		});
+}
+
 /**
  * Draw function to set up perspective, view, and terrain
  */
@@ -127,21 +168,31 @@ function draw() {
   //vec3.set(position, 0, -0.25, position[2] + 0.01)
   //mat4.translate(mvMatrix, mvMatrix,transformVec);
   mat4.rotateY(mvMatrix, mvMatrix, degToRad(viewRot + 30));
-  //mat4.rotateX(mvMatrix, mvMatrix, degToRad(-70));
- 
-  gl.useProgram(shaderProgram);
-  setShaderModelView();
-  setShaderNormal(mvMatrix);
-  setShaderProjection();
+  //mat4.multiply(mvMatrix, vMatrix, mvMatrix);
 
-  setLightUniforms(lightPosition,lAmbient,lDiffuse,lSpecular);
-  setFogUniform(fogDensity);
-  setMaterialUniforms(shininess,kAmbient,kTerrainDiffuse,kSpecular);
+  if(myMesh.loaded()) {
+	  mvPush(mvMatrix);
+	  mat4.scale(mvMatrix, mvMatrix, vec3.fromValues(0.05,0.05,0.05));
+	  mat4.translate(mvMatrix, mvMatrix, vec3.fromValues(0, 0, 0));
+	  //mat4.rotateZ(mvMatrix, mvMatrix, degToRad(-30));
+	  gl.useProgram(shaderProgram);
+	  setRefractFlagUniform();
+	  setShaderModelView();
+      setShaderNormal(mvMatrix);
+      setShaderProjection();
+	  setLightUniforms(lightPosition,lAmbient,lDiffuse,lSpecular);
+      setMaterialUniforms(shininess,kAmbient,kTerrainDiffuse,kSpecular);
+	  myMesh.drawTriangles();
+	  mvPop();
+  }
+
   //drawTerrain();
   gl.useProgram(skyboxShaderProgram);
   setSkyboxShaderModelView();
   setSkyboxShaderProjection();
   drawCube();
+  
+
 }
 
 /**
@@ -150,6 +201,7 @@ function draw() {
 function setShaderModelView() {
   /* Usage of sending uniform matrix down to shader here */
   gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
+  gl.uniformMatrix4fv(shaderProgram.vMatrixUniform, false, vMatrix);
 }
 
 /**
@@ -161,6 +213,7 @@ function setShaderProjection() {
 
 function setSkyboxShaderModelView() {
   gl.uniformMatrix4fv(skyboxShaderProgram.mvMatrixUniform, false, mvMatrix);
+  gl.uniformMatrix4fv(skyboxShaderProgram.vMatrixUniform, false, vMatrix);
 }
 
 function setSkyboxShaderProjection() {
@@ -192,7 +245,7 @@ function generatePerspective() {
 function generateView() {
   /* Look down -z; viewPt, eyePt, viewDir*/
   vec3.add(viewPt, eyePt, viewDir);
-  mat4.lookAt(mvMatrix, eyePt, viewPt, up);
+  mat4.lookAt(vMatrix, eyePt, viewPt, up);
 }
 
 /** mvMatrix Stack Operations */
@@ -252,7 +305,7 @@ function initializeShaderProgram() {
     gl.useProgram(shaderProgram);
     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "a_vertex");
     gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-	//shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "a_normal");
+	shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "a_normal");
     gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
     initializeUniforms();
     return shaderProgram;
@@ -287,6 +340,7 @@ function initializeSkyboxShaderProgram() {
 function initializeSkyUniforms() {
   skyboxShaderProgram.mvMatrixUniform = gl.getUniformLocation(skyboxShaderProgram, "uMVMatrix");
   skyboxShaderProgram.pMatrixUniform = gl.getUniformLocation(skyboxShaderProgram, "uPMatrix");
+  skyboxShaderProgram.vMatrixUniform = gl.getUniformLocation(skyboxShaderProgram, "uVMatrix");
 }
 
 /**
@@ -305,6 +359,12 @@ function initializeUniforms() {
   shaderProgram.uniformDiffuseMaterialColorLoc = gl.getUniformLocation(shaderProgram, "uKDiffuse");
   shaderProgram.uniformSpecularMaterialColorLoc = gl.getUniformLocation(shaderProgram, "uKSpecular");
   shaderProgram.uniformFogDensityLoc = gl.getUniformLocation(shaderProgram, "uFogDensity");
+
+  shaderProgram.uniformViewMatrixLoc = gl.getUniformLocation(shaderProgram, "uVMatrix"); 
+  // Flags for reflection/refraction shaders
+  shaderProgram.uniformRefractionLoc = gl.getUniformLocation(shaderProgram, "uRefractionFlag");
+
+  shaderProgram.uniformReflectionLoc = gl.getUniformLocation(shaderProgram, "uReflectionFlag");
 }
 
 /**
@@ -333,6 +393,12 @@ function setLightUniforms(loc,a,d,s) {
   gl.uniform3fv(shaderProgram.uniformAmbientLightColorLoc, a);
   gl.uniform3fv(shaderProgram.uniformDiffuseLightColorLoc, d);
   gl.uniform3fv(shaderProgram.uniformSpecularLightColorLoc, s);
+}
+
+
+function setRefractFlagUniform() {
+  gl.uniform1i(shaderProgram.uniformReflectionLoc, reflectionFlag);
+  gl.uniform1i(shaderProgram.uniformRefractionLoc, refractionFlag);
 }
 
 /**
@@ -385,6 +451,7 @@ function startup() {
   //initializeTerrain();
   initializeCube();
   textureCube();
+  setupMesh("https://raw.githubusercontent.com/illinois-cs418/cs418CourseMaterial/master/Meshes/teapot_0.obj");
   tick();
 }
 
@@ -434,15 +501,17 @@ function keyboardHandler(evt) {
 function tick() {
   requestAnimationFrame(tick);
   // Check if fog should be enabled
+  /*
   if(document.getElementById('r1').checked) {
     fogDensity = 0.6;
   } else {
     fogDensity = 0.0
-  }
+  }*/
 
+  /*
   // Display pitch on html
   document.getElementById("pitch").innerHTML = "Pitch: " + pitchAngle + " Roll: " + rollAngle + " Speed: " + velocity * 1000;
-  // Draw call
+  // Draw call*/
   draw();
 }
 

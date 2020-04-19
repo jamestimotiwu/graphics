@@ -95,8 +95,8 @@ function textureCube() {
 	},
 	];
 	faceInfos.forEach((faceInfo) => {
+		// Reference from WebGL Fundamentals
 		const {target, url} = faceInfo;
-	
 		const level = 0;
 		const internalFormat = gl.RGBA;
 		const width = 512;
@@ -105,7 +105,6 @@ function textureCube() {
 		const type = gl.UNSIGNED_BYTE;
 	
 		gl.texImage2D(target, level, internalFormat, width, height, 0, format, type, null);
-	
 		const image = new Image();
 		image.src = url;
 		
