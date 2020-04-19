@@ -175,6 +175,7 @@ function draw() {
 	  mat4.scale(mvMatrix, mvMatrix, vec3.fromValues(0.05,0.05,0.05));
 	  mat4.translate(mvMatrix, mvMatrix, vec3.fromValues(0, 0, 0));
 	  //mat4.rotateZ(mvMatrix, mvMatrix, degToRad(-30));
+	  mat4.rotateY(mvMatrix, mvMatrix, degToRad(eulerY + 30));
 	  gl.useProgram(shaderProgram);
 	  setRefractFlagUniform();
 	  setShaderModelView();
@@ -245,7 +246,7 @@ function generatePerspective() {
 function generateView() {
   /* Look down -z; viewPt, eyePt, viewDir*/
   vec3.add(viewPt, eyePt, viewDir);
-  mat4.lookAt(vMatrix, eyePt, viewPt, up);
+  mat4.lookAt(mvMatrix, eyePt, viewPt, up);
 }
 
 /** mvMatrix Stack Operations */
@@ -477,12 +478,12 @@ function keyboardHandler(evt) {
 
   // Pitch up -> up arrow
   if (evt.code == "ArrowUp") {
-    pitchAngle += 0.05;
+	eulerY += 1.0;
   }
 
   // Pitch down -> down arrow
   if (evt.code == "ArrowDown") {
-    pitchAngle -= 0.05;
+    eulerY -= 1.0;
   }
 
   // Increase speed -> +

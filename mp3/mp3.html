@@ -16,7 +16,7 @@
 		varying vec3 v_vertex;
 
 		void main(void) {
-            gl_Position = uPMatrix*uVMatrix*vec4(a_vertex, 1.0);
+            gl_Position = uPMatrix*uMVMatrix*vec4(a_vertex, 1.0);
 			v_vertex = a_vertex;
 		}
 
