@@ -46,7 +46,7 @@ var quatOrientation = quat.create();
 
 /** View globals */
 /** @global Camera location in world coordinates */
-var eyePt = vec3.fromValues(0.0, 0.0, 1.0);
+var eyePt = vec3.fromValues(0.0, 0.0, 20.0);
 
 /** @global Direction of view in world coordinates (down -z axis)*/
 var viewDir = vec3.fromValues(0.0, 0.0, -1.0);
@@ -167,16 +167,15 @@ function draw() {
   vec3.set(transformVec,0.0,0.0, 0.0);
   //vec3.set(position, 0, -0.25, position[2] + 0.01)
   //mat4.translate(mvMatrix, mvMatrix,transformVec);
-  mat4.rotateY(mvMatrix, mvMatrix, degToRad(viewRot + 30));
+  mat4.rotateY(vMatrix, vMatrix, degToRad(viewRot + 30));
   //mat4.multiply(mvMatrix, vMatrix, mvMatrix);
 
   if(myMesh.loaded()) {
 	  mvPush(mvMatrix);
-	  mat4.scale(mvMatrix, mvMatrix, vec3.fromValues(0.05,0.05,0.05));
-	  mat4.translate(mvMatrix, mvMatrix, vec3.fromValues(0, 0, 0));
 	  //mat4.rotateZ(mvMatrix, mvMatrix, degToRad(-30));
 	  mat4.rotateY(mvMatrix, mvMatrix, degToRad(eulerY + 30));
 	  gl.useProgram(shaderProgram);
+	  gl.uniform3fv(shaderProgram.uniformEyeLoc, eyePt);
 	  setRefractFlagUniform();
 	  setShaderModelView();
       setShaderNormal(mvMatrix);
@@ -246,7 +245,7 @@ function generatePerspective() {
 function generateView() {
   /* Look down -z; viewPt, eyePt, viewDir*/
   vec3.add(viewPt, eyePt, viewDir);
-  mat4.lookAt(mvMatrix, eyePt, viewPt, up);
+  mat4.lookAt(vMatrix, eyePt, viewPt, up);
 }
 
 /** mvMatrix Stack Operations */
@@ -361,11 +360,14 @@ function initializeUniforms() {
   shaderProgram.uniformSpecularMaterialColorLoc = gl.getUniformLocation(shaderProgram, "uKSpecular");
   shaderProgram.uniformFogDensityLoc = gl.getUniformLocation(shaderProgram, "uFogDensity");
 
-  shaderProgram.uniformViewMatrixLoc = gl.getUniformLocation(shaderProgram, "uVMatrix"); 
+  shaderProgram.vMatrixUniform = gl.getUniformLocation(shaderProgram, "uVMatrix"); 
   // Flags for reflection/refraction shaders
   shaderProgram.uniformRefractionLoc = gl.getUniformLocation(shaderProgram, "uRefractionFlag");
 
   shaderProgram.uniformReflectionLoc = gl.getUniformLocation(shaderProgram, "uReflectionFlag");
+
+  shaderProgram.uniformEyeLoc = gl.getUniformLocation(shaderProgram, "uEye");
+
 }
 
 /**

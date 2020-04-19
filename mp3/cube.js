@@ -122,7 +122,7 @@ function textureCube() {
 }
 
 function initializeCube() {
-	let len = 3.0;
+	let len = 50.0;
 	generateCube(len);
     var ext = gl.getExtension('OES_element_index_uint');
     if (ext ==null){
