@@ -160,20 +160,17 @@ function draw() {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   generatePerspective();
-  //gl.drawElements(gl.TRIANGLES, ,num)
   /* Generate view */
   generateView();
   /* Set terrain in front of view */
   vec3.set(transformVec,0.0,0.0, 0.0);
-  //vec3.set(position, 0, -0.25, position[2] + 0.01)
   //mat4.translate(mvMatrix, mvMatrix,transformVec);
   mat4.rotateY(vMatrix, vMatrix, degToRad(viewRot + 30));
-  //mat4.multiply(mvMatrix, vMatrix, mvMatrix);
 
   if(myMesh.loaded()) {
 	  mvPush(mvMatrix);
 	  //mat4.rotateZ(mvMatrix, mvMatrix, degToRad(-30));
-	  mat4.rotateY(mvMatrix, mvMatrix, degToRad(eulerY + 30));
+	  //mat4.rotateY(mvMatrix, mvMatrix, degToRad(eulerY*2.0 + 30));
 	  gl.useProgram(shaderProgram);
 	  gl.uniform3fv(shaderProgram.uniformEyeLoc, eyePt);
 	  setRefractFlagUniform();
@@ -244,7 +241,7 @@ function generatePerspective() {
  */
 function generateView() {
   /* Look down -z; viewPt, eyePt, viewDir*/
-  vec3.add(viewPt, eyePt, viewDir);
+  //vec3.add(viewPt, eyePt, viewDir);
   mat4.lookAt(vMatrix, eyePt, viewPt, up);
 }
 
@@ -470,12 +467,14 @@ var velocity = 0.001;
 function keyboardHandler(evt) {
   // Roll left -> left arrow
   if (evt.code == "ArrowLeft") {
-    viewRot -= 1.0;
+    //viewRot -= 1.0;
+	vec3.rotateY(eyePt, eyePt, viewPt, -degToRad(5));
   }
 
   // Roll right -> right arrow
   if (evt.code == "ArrowRight") {
-    viewRot += 1.0;
+    //viewRot += 1.0;
+	vec3.rotateY(eyePt, eyePt, viewPt, degToRad(5));
   }
 
   // Pitch up -> up arrow

@@ -67,14 +67,16 @@
             
             // Transform the normal (n) to eye coordinates
             normalEye = normalize(uNMatrix * a_normal);
-			
-			v_vertex = reflect(normalize(a_vertex - uEye), normalEye);
+	
+			//vec4 modelPos = uMVMatrix * vec4(a_vertex, 1.0);
+			//vec3 viewVec = normalize(modelPos.xyz - uEye);
+			//v_vertex = refract(viewVec, normalEye, 0.3);
             // The camera in eye coordinates is located in the origin and is pointing
             // along the negative z-axis. Calculate viewVector (v) 
             // in eye coordinates as:
             // (0.0, 0.0, 0.0) - vertexPositionEye3
             viewVectorEye = -normalize(vertexPositionEye3);
-			//v_vertex = reflect(vertexPositionEye3, normalEye);
+			v_vertex = reflect(vertexPositionEye3, normalEye);
 			//if (uRefractionFlag == 1) {
 			//	normalEye = refract(viewVectorEye, normalEye, 0.7);
 			//}
@@ -84,6 +86,10 @@
 			//}
             // Sum up all three reflection components and send to the fragment shader
             gl_Position = uPMatrix*uVMatrix*uMVMatrix*vec4(a_vertex, 1.0);
+			vec3 worldP = (uMVMatrix * vec4(a_vertex, 1.0)).xyz;
+			vec3 worldN = mat3(uMVMatrix) * a_normal;
+			vec3 eyeDir = normalize(worldP - uEye);
+			v_vertex = reflect(eyeDir, normalize(worldN));
         }
     </script>
     <script id="fragment-shader" type="x-shader">
@@ -129,7 +135,7 @@
             gl_FragColor = vec4(((uAmbientLightColor*uKAmbient)
                         + (uDiffuseLightColor*vDiffuse) * diffuseLightWeightning
                         + ((uSpecularLightColor*uKSpecular) * specularLightWeightning)),1.0);
-            gl_FragColor = textureCube(uTexture, v_vertex); 
+			gl_FragColor = textureCube(uTexture, v_vertex); 
         }
     </script>
     <script src="gl-matrix-min.js"></script>
