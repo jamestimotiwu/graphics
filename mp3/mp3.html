@@ -27,6 +27,7 @@
 		uniform samplerCube sampler;
 		varying vec3 v_vertex;
 
+        // Texture cube accordingly by passing sampler texture0
 		void main(void) {
 			gl_FragColor = textureCube(sampler, v_vertex);
 		}
@@ -43,6 +44,7 @@
         varying vec3 viewVectorEye;
         varying vec3 vDiffuse;
 		varying vec3 v_vertex;
+		varying float phongFlag;
 
         // Model-view matrix
         uniform vec3 uLightPosition;
@@ -56,6 +58,7 @@
 		uniform int uRefractionFlag;
 		uniform int uReflectionFlag;
 
+
         void main(void) {
 
             // Get the vertex position in eye coordinates
@@ -68,28 +71,25 @@
             // Transform the normal (n) to eye coordinates
             normalEye = normalize(uNMatrix * a_normal);
 	
-			//vec4 modelPos = uMVMatrix * vec4(a_vertex, 1.0);
-			//vec3 viewVec = normalize(modelPos.xyz - uEye);
-			//v_vertex = refract(viewVec, normalEye, 0.3);
             // The camera in eye coordinates is located in the origin and is pointing
             // along the negative z-axis. Calculate viewVector (v) 
             // in eye coordinates as:
             // (0.0, 0.0, 0.0) - vertexPositionEye3
             viewVectorEye = -normalize(vertexPositionEye3);
-			v_vertex = reflect(vertexPositionEye3, normalEye);
-			//if (uRefractionFlag == 1) {
-			//	normalEye = refract(viewVectorEye, normalEye, 0.7);
-			//}
-
-			//if {uReflectionFlag == 1) {
-			//	normalEye = reflect(viewVectorEye, normalEye);
-			//}
+			vec3 modelVector = (uMVMatrix * vec4(a_vertex, 1.0)).xyz;
+			vec3 normalVector = normalize(mat3(uMVMatrix) * a_normal);
+			vec3 eyeToModel = normalize(modelVector - uEye);
+			//v_vertex = reflect(eyeToModel, normalVector);
+			phongFlag = 0.0;
+			if (uRefractionFlag == 1) {
+				v_vertex = refract(eyeToModel, normalVector, 1.1);
+			} else if (uReflectionFlag == 1) {
+				v_vertex = reflect(eyeToModel, normalVector);
+			} else {
+				phongFlag = 1.0;
+			}
             // Sum up all three reflection components and send to the fragment shader
             gl_Position = uPMatrix*uVMatrix*uMVMatrix*vec4(a_vertex, 1.0);
-			vec3 worldP = (uMVMatrix * vec4(a_vertex, 1.0)).xyz;
-			vec3 worldN = mat3(uMVMatrix) * a_normal;
-			vec3 eyeDir = normalize(worldP - uEye);
-			v_vertex = reflect(eyeDir, normalize(worldN));
         }
     </script>
     <script id="fragment-shader" type="x-shader">
@@ -101,6 +101,7 @@
         varying vec3 viewVectorEye;
         varying vec3 vDiffuse;
 		varying vec3 v_vertex;
+		varying float phongFlag;
 
         uniform vec3 uAmbientLightColor;
         uniform vec3 uDiffuseLightColor;
@@ -132,10 +133,13 @@
             float specularLightWeightning = pow(hdotn, uShininess);
         
             // Sum up all three reflection components and send to the fragment shader
-            gl_FragColor = vec4(((uAmbientLightColor*uKAmbient)
+            if (phongFlag == 1.0) {
+				gl_FragColor = vec4(((uAmbientLightColor*uKAmbient)
                         + (uDiffuseLightColor*vDiffuse) * diffuseLightWeightning
                         + ((uSpecularLightColor*uKSpecular) * specularLightWeightning)),1.0);
-			gl_FragColor = textureCube(uTexture, v_vertex); 
+			} else {
+				gl_FragColor = textureCube(uTexture, v_vertex); 
+			}
         }
     </script>
     <script src="gl-matrix-min.js"></script>
@@ -144,20 +148,19 @@
 	<script src="cube.js"></script>
     <script src="mp3.js"></script>
     <body onload="startup();">
-        <canvas id="mp1GLCanvas" width="800" height="800"></canvas>
+        <canvas id="mp1GLCanvas" width="800" height="700"></canvas>
     </body>
     <body>
-        <p id="pitch">Pitch: </p>
         <p>
-            Press left or right arrow keys to orbit.. <br>
+            Press left or right arrow keys to orbit around Teapot. Press up or down arrow keys to orbit teapot. Press = or - to zoom in and out <br>
         </p>
-        <div id="animationToggle">
-			Phong-Blinn
-            <input type="radio" id="r1" name="Animation" value=1 checked="checked">
+        <div id="toggle">
+            <input type="radio" id="r1" name="toggle" value=1 checked="checked">
 			Refraction
-            <input type="radio" id="r2" name="Animation" value=0> 
+            <input type="radio" id="r2" name="toggle" value=0> 
 			Reflection
-            <input type="radio" id="r2" name="Animation" value=0> 
+            <input type="radio" id="r3" name="toggle" value=0> 
+			Phong-Blinn
         </div>
     </body>
 </html>

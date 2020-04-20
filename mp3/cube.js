@@ -4,18 +4,31 @@
  * @author James Timotiwu <jit2@illinois.edu>
 */
 
+/**
+ * @global Vertex buffers
+ */
 var vertexBuffer = [];
 var numVertices;
 var vertexBufProgram;
 
+/**
+ * @global triangle buffers
+ */
 var triBuffer = [];
 var triBufProgram;
 var numFaces;
 
+/**
+ * @global normal buffers
+ */
 var normalBuffer = [];
 var normBufProgram;
 var numNorms;
 
+/**
+ * generateCube - Generates a cube of given length
+ * @param {float} length 
+ */
 function generateCube(length) {
 	let x = length / 2.0;
 	let y = length / 2.0;
@@ -64,10 +77,14 @@ function generateCube(length) {
 	numFaces = triBuffer.length / 3;
 }
 
+/**
+ * textureCube - Cube texture setup
+ */
 function textureCube() {
 	var texture = gl.createTexture();
 	gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
 	
+	/** Load all images */
 	const faceInfos = [
 	{
 		target: gl.TEXTURE_CUBE_MAP_POSITIVE_X,
@@ -121,8 +138,11 @@ function textureCube() {
 	gl.activeTexture(gl.TEXTURE0);
 }
 
+/**
+ * initializeCube - generates Cube mesh given the length and loads it into the Cube buffers
+ */
 function initializeCube() {
-	let len = 50.0;
+	let len = 100.0;
 	generateCube(len);
     var ext = gl.getExtension('OES_element_index_uint');
     if (ext ==null){
@@ -132,6 +152,9 @@ function initializeCube() {
 
 }
 
+/**
+ * initializeCubeBUffers - initialize buffers related to cube
+ */
 function initializeCubeBuffers() {
 	vertexBufProgram = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, vertexBufProgram);
@@ -147,6 +170,9 @@ function initializeCubeBuffers() {
 	triBufProgram.numItems = triBuffer.length;
 }
 
+/**
+ * drawCube - draw call for Cube to skybox shader program
+ */
 function drawCube () {
 	gl.bindBuffer(gl.ARRAY_BUFFER, vertexBufProgram);
     gl.vertexAttribPointer(skyboxShaderProgram.vertexPositionAttribute, vertexBufProgram.itemSize, 

@@ -46,7 +46,7 @@ var quatOrientation = quat.create();
 
 /** View globals */
 /** @global Camera location in world coordinates */
-var eyePt = vec3.fromValues(0.0, 0.0, 20.0);
+var eyePt = vec3.fromValues(0.0, 0.0, 15.0);
 
 /** @global Direction of view in world coordinates (down -z axis)*/
 var viewDir = vec3.fromValues(0.0, 0.0, -1.0);
@@ -59,31 +59,31 @@ var viewPt = vec3.fromValues(0.0, 0.0, 0.0);
 
 
 /** @global Elapsed tick */
-var t = 0; 
+var t = 0;
 
 /** Lighting parameters */
 /** @global Light position in VIEW coordinates */
-var lightPosition = [1,1,1];
+var lightPosition = [1, 1, 1];
 /** @global Ambient light color/intensity for Phong reflection */
-var lAmbient = [0.1,0.1,0.1];
+var lAmbient = [0.1, 0.1, 0.1];
 /** @global Diffuse light color/intensity for Phong reflection */
-var lDiffuse = [1.0,1.0,1.0];
+var lDiffuse = [1.0, 1.0, 1.0];
 /** @global Specular light color/intensity for Phong reflection */
-var lSpecular =[0.2,0.5,1.0];
+var lSpecular = [0.2, 0.5, 1.0];
 
 //Material parameters
 /** @global Ambient material color/intensity for Phong reflection */
-var kAmbient = [1.0,1.0,1.0];
+var kAmbient = [1.0, 1.0, 1.0];
 /** @global Diffuse material color/intensity for Phong reflection */
-var kTerrainDiffuse = [150.0/255.0,163.0/255.0,63.0/255.0];
+var kTerrainDiffuse = [150.0 / 255.0, 163.0 / 255.0, 63.0 / 255.0];
 /** @global Specular material color/intensity for Phong reflection */
-var kSpecular = [1.0,1.0,1.0];
+var kSpecular = [1.0, 1.0, 1.0];
 /** @global Shininess exponent for Phong reflection */
 var shininess = 20;
 /** @global Edge color fpr wireframeish rendering */
-var kEdgeBlack = [0.0,0.0,0.0];
+var kEdgeBlack = [0.0, 0.0, 0.0];
 /** @global Edge color for wireframe rendering */
-var kEdgeWhite = [1.0,1.0,1.0];
+var kEdgeWhite = [1.0, 1.0, 1.0];
 
 
 /** @global Fog density */
@@ -91,7 +91,7 @@ var fogDensity = 0.6
 
 var myMesh;
 
-var reflectionFlag = 1;
+var reflectionFlag = 0;
 
 var refractionFlag = 0;
 
@@ -104,18 +104,18 @@ var vMatrix = mat4.create();
  * @return {Object} WebGL context
  */
 function getGLContext(canvas) {
-     var context = canvas.getContext("webgl");
+  var context = canvas.getContext("webgl");
 
-     if (context) {
-         context.viewportWidth = canvas.width;
-         context.viewportHeight = canvas.height;
-     }
-     else {
-         console.log("Failed to create context")
-         return null;
-     }
+  if (context) {
+    context.viewportWidth = canvas.width;
+    context.viewportHeight = canvas.height;
+  }
+  else {
+    console.log("Failed to create context")
+    return null;
+  }
 
-     return context;
+  return context;
 }
 
 //----------------------------------------------------------------------------------
@@ -123,17 +123,17 @@ function getGLContext(canvas) {
  * Populate buffers with data
  */
 function setupMesh(filename) {
-   //Your code here
-   myMesh = new TriMesh();
-   myPromise = asyncGetFile(filename);
-   
-   myPromise.then((retrievedText) => {
-	myMesh.loadFromOBJ(retrievedText);
-   })
-   .catch(
-	(reason) => {
-		console.log('Handle rejected promise ('+reason+')here.');
-	});
+  //Your code here
+  myMesh = new TriMesh();
+  myPromise = asyncGetFile(filename);
+
+  myPromise.then((retrievedText) => {
+    myMesh.loadFromOBJ(retrievedText);
+  })
+    .catch(
+      (reason) => {
+        console.log('Handle rejected promise (' + reason + ')here.');
+      });
 }
 
 //-------------------------------------------------------------------------
@@ -141,13 +141,13 @@ function setupMesh(filename) {
  * Asynchronously read a server-side text file
  */
 function asyncGetFile(url) {
-	return new Promise((resolve, reject) => {
-		const xhr = new XMLHttpRequest();
-		xhr.open("GET", url);
-		xhr.onload = () => resolve(xhr.responseText);
-		xhr.onerror = () => reject(xhr.statusText);
-		xhr.send();
-		});
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", url);
+    xhr.onload = () => resolve(xhr.responseText);
+    xhr.onerror = () => reject(xhr.statusText);
+    xhr.send();
+  });
 }
 
 /**
@@ -162,33 +162,27 @@ function draw() {
   generatePerspective();
   /* Generate view */
   generateView();
-  /* Set terrain in front of view */
-  vec3.set(transformVec,0.0,0.0, 0.0);
-  //mat4.translate(mvMatrix, mvMatrix,transformVec);
-  mat4.rotateY(vMatrix, vMatrix, degToRad(viewRot + 30));
 
-  if(myMesh.loaded()) {
-	  mvPush(mvMatrix);
-	  //mat4.rotateZ(mvMatrix, mvMatrix, degToRad(-30));
-	  //mat4.rotateY(mvMatrix, mvMatrix, degToRad(eulerY*2.0 + 30));
-	  gl.useProgram(shaderProgram);
-	  gl.uniform3fv(shaderProgram.uniformEyeLoc, eyePt);
-	  setRefractFlagUniform();
-	  setShaderModelView();
-      setShaderNormal(mvMatrix);
-      setShaderProjection();
-	  setLightUniforms(lightPosition,lAmbient,lDiffuse,lSpecular);
-      setMaterialUniforms(shininess,kAmbient,kTerrainDiffuse,kSpecular);
-	  myMesh.drawTriangles();
-	  mvPop();
+  if (myMesh.loaded()) {
+    mvPush(mvMatrix);
+    //mat4.rotateZ(mvMatrix, mvMatrix, degToRad(-30));
+    mat4.rotateY(mvMatrix, mvMatrix, degToRad(viewRot + 30));
+    gl.useProgram(shaderProgram);
+    gl.uniform3fv(shaderProgram.uniformEyeLoc, eyePt);
+    setRefractFlagUniform();
+    setShaderModelView();
+    setShaderNormal(mvMatrix);
+    setShaderProjection();
+    setLightUniforms(lightPosition, lAmbient, lDiffuse, lSpecular);
+    setMaterialUniforms(shininess, kAmbient, kTerrainDiffuse, kSpecular);
+    myMesh.drawTriangles();
+    mvPop();
   }
 
-  //drawTerrain();
   gl.useProgram(skyboxShaderProgram);
   setSkyboxShaderModelView();
   setSkyboxShaderProjection();
   drawCube();
-  
 
 }
 
@@ -208,22 +202,29 @@ function setShaderProjection() {
   gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
 }
 
+/**
+ * Loads matrix uniforms for skybox shader program
+ */
 function setSkyboxShaderModelView() {
   gl.uniformMatrix4fv(skyboxShaderProgram.mvMatrixUniform, false, mvMatrix);
   gl.uniformMatrix4fv(skyboxShaderProgram.vMatrixUniform, false, vMatrix);
 }
 
+/**
+ * Loads projection matrix for skybox program
+ */
 function setSkyboxShaderProjection() {
-	gl.uniformMatrix4fv(skyboxShaderProgram.pMatrixUniform, false, pMatrix);
+  gl.uniformMatrix4fv(skyboxShaderProgram.pMatrixUniform, false, pMatrix);
 }
+
 /**
  * Pass shader normals in global to shader programs
  * @param {*} viewMatrix 
  */
 function setShaderNormal(viewMatrix) {
-  mat3.fromMat4(nMatrix,viewMatrix);
-  mat3.transpose(nMatrix,nMatrix);
-  mat3.invert(nMatrix,nMatrix);
+  mat3.fromMat4(nMatrix, viewMatrix);
+  mat3.transpose(nMatrix, nMatrix);
+  mat3.invert(nMatrix, nMatrix);
   gl.uniformMatrix3fv(shaderProgram.nMatrixUniform, false, nMatrix);
 }
 
@@ -231,9 +232,9 @@ function setShaderNormal(viewMatrix) {
  * Generate perspective given viewport height and width to projection matrix pMatrix
  */
 function generatePerspective() {
-  mat4.perspective(pMatrix, degToRad(45), 
-  gl.viewportWidth / gl.viewportHeight,
-  0.1, 200.0);
+  mat4.perspective(pMatrix, degToRad(45),
+    gl.viewportWidth / gl.viewportHeight,
+    0.1, 200.0);
 }
 
 /**
@@ -280,7 +281,7 @@ function initializeBuffers() {
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   gl.enable(gl.DEPTH_TEST);
 
-  gl.useProgram(shaderProgram);  
+  gl.useProgram(shaderProgram);
   // Set window resolution
   gl.uniform2f(gl.getUniformLocation(shaderProgram, "u_resolution"), gl.canvas.width, gl.canvas.height);
 }
@@ -302,7 +303,7 @@ function initializeShaderProgram() {
     gl.useProgram(shaderProgram);
     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "a_vertex");
     gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-	shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "a_normal");
+    shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "a_normal");
     gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
     initializeUniforms();
     return shaderProgram;
@@ -311,9 +312,12 @@ function initializeShaderProgram() {
   console.log("initializeShader: Error setting up shaders")
 }
 
+/**
+ * Initializes skybox shader program and enables vertex attribs
+ */
 function initializeSkyboxShaderProgram() {
 
-/* Initialize skybox shaders */ 
+  /* Initialize skybox shaders */
   var skyboxVertexShader = initializeShader("skybox-vertex-shader", gl.VERTEX_SHADER);
 
   var skyboxFragmentShader = initializeShader("skybox-fragment-shader", gl.FRAGMENT_SHADER);
@@ -325,15 +329,18 @@ function initializeSkyboxShaderProgram() {
   gl.linkProgram(skyboxShaderProgram);
 
   if (gl.getProgramParameter(skyboxShaderProgram, gl.LINK_STATUS)) {
-	gl.useProgram(skyboxShaderProgram);
-	skyboxShaderProgram.vertexPositionAttribute = gl.getAttribLocation(skyboxShaderProgram, "a_vertex");
-	gl.enableVertexAttribArray(skyboxShaderProgram.vertexPositionAttribute);
-	initializeSkyUniforms();
+    gl.useProgram(skyboxShaderProgram);
+    skyboxShaderProgram.vertexPositionAttribute = gl.getAttribLocation(skyboxShaderProgram, "a_vertex");
+    gl.enableVertexAttribArray(skyboxShaderProgram.vertexPositionAttribute);
+    initializeSkyUniforms();
     return skyboxShaderProgram;
   }
 
 }
 
+/**
+ * Initializes matrix uniforms for skybox
+ */
 function initializeSkyUniforms() {
   skyboxShaderProgram.mvMatrixUniform = gl.getUniformLocation(skyboxShaderProgram, "uMVMatrix");
   skyboxShaderProgram.pMatrixUniform = gl.getUniformLocation(skyboxShaderProgram, "uPMatrix");
@@ -347,22 +354,20 @@ function initializeUniforms() {
   shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
   shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
   shaderProgram.nMatrixUniform = gl.getUniformLocation(shaderProgram, "uNMatrix");
-  shaderProgram.uniformLightPositionLoc = gl.getUniformLocation(shaderProgram, "uLightPosition");    
-  shaderProgram.uniformAmbientLightColorLoc = gl.getUniformLocation(shaderProgram, "uAmbientLightColor");  
+  shaderProgram.uniformLightPositionLoc = gl.getUniformLocation(shaderProgram, "uLightPosition");
+  shaderProgram.uniformAmbientLightColorLoc = gl.getUniformLocation(shaderProgram, "uAmbientLightColor");
   shaderProgram.uniformDiffuseLightColorLoc = gl.getUniformLocation(shaderProgram, "uDiffuseLightColor");
   shaderProgram.uniformSpecularLightColorLoc = gl.getUniformLocation(shaderProgram, "uSpecularLightColor");
-  shaderProgram.uniformShininessLoc = gl.getUniformLocation(shaderProgram, "uShininess");    
-  shaderProgram.uniformAmbientMaterialColorLoc = gl.getUniformLocation(shaderProgram, "uKAmbient");  
+  shaderProgram.uniformShininessLoc = gl.getUniformLocation(shaderProgram, "uShininess");
+  shaderProgram.uniformAmbientMaterialColorLoc = gl.getUniformLocation(shaderProgram, "uKAmbient");
   shaderProgram.uniformDiffuseMaterialColorLoc = gl.getUniformLocation(shaderProgram, "uKDiffuse");
   shaderProgram.uniformSpecularMaterialColorLoc = gl.getUniformLocation(shaderProgram, "uKSpecular");
   shaderProgram.uniformFogDensityLoc = gl.getUniformLocation(shaderProgram, "uFogDensity");
 
-  shaderProgram.vMatrixUniform = gl.getUniformLocation(shaderProgram, "uVMatrix"); 
+  shaderProgram.vMatrixUniform = gl.getUniformLocation(shaderProgram, "uVMatrix");
   // Flags for reflection/refraction shaders
   shaderProgram.uniformRefractionLoc = gl.getUniformLocation(shaderProgram, "uRefractionFlag");
-
   shaderProgram.uniformReflectionLoc = gl.getUniformLocation(shaderProgram, "uReflectionFlag");
-
   shaderProgram.uniformEyeLoc = gl.getUniformLocation(shaderProgram, "uEye");
 
 }
@@ -374,7 +379,7 @@ function initializeUniforms() {
  * @param {Float32Array} d Diffuse material color
  * @param {Float32Array} s Specular material color
  */
-function setMaterialUniforms(alpha,a,d,s) {
+function setMaterialUniforms(alpha, a, d, s) {
   gl.uniform1f(shaderProgram.uniformShininessLoc, alpha);
   gl.uniform3fv(shaderProgram.uniformAmbientMaterialColorLoc, a);
   gl.uniform3fv(shaderProgram.uniformDiffuseMaterialColorLoc, d);
@@ -388,14 +393,16 @@ function setMaterialUniforms(alpha,a,d,s) {
  * @param {Float32Array} d Diffuse light strength
  * @param {Float32Array} s Specular light strength
  */
-function setLightUniforms(loc,a,d,s) {
+function setLightUniforms(loc, a, d, s) {
   gl.uniform3fv(shaderProgram.uniformLightPositionLoc, loc);
   gl.uniform3fv(shaderProgram.uniformAmbientLightColorLoc, a);
   gl.uniform3fv(shaderProgram.uniformDiffuseLightColorLoc, d);
   gl.uniform3fv(shaderProgram.uniformSpecularLightColorLoc, s);
 }
 
-
+/**
+ * Sets uniforms for flagging to determine if reflection or refraction
+ */
 function setRefractFlagUniform() {
   gl.uniform1i(shaderProgram.uniformReflectionLoc, reflectionFlag);
   gl.uniform1i(shaderProgram.uniformRefractionLoc, refractionFlag);
@@ -441,8 +448,6 @@ function startup() {
    */
   var canvas = document.getElementById("mp1GLCanvas")
   gl = getGLContext(canvas)
-  //initializeMeshes();
-  //initializeTerrain();
   initializeShaderProgram();
   initializeBuffers();
   initializeSkyboxShaderProgram();
@@ -458,61 +463,60 @@ function startup() {
 /** Keyboard handler */
 document.addEventListener('keydown', keyboardHandler);
 
-/** Current euler angle values */
-var rollAngle = 0.0;
-var pitchAngle = 0.0;
-var velocity = 0.001;
-
 /** Keyboard event handler  */
 function keyboardHandler(evt) {
-  // Roll left -> left arrow
+  console.log(evt.code);
+  // Roll eye -> left arrow
   if (evt.code == "ArrowLeft") {
     //viewRot -= 1.0;
-	vec3.rotateY(eyePt, eyePt, viewPt, -degToRad(5));
+    vec3.rotateY(eyePt, eyePt, viewPt, -degToRad(3));
   }
 
-  // Roll right -> right arrow
+  // Roll eye -> right arrow
   if (evt.code == "ArrowRight") {
     //viewRot += 1.0;
-	vec3.rotateY(eyePt, eyePt, viewPt, degToRad(5));
+    vec3.rotateY(eyePt, eyePt, viewPt, degToRad(3));
   }
 
-  // Pitch up -> up arrow
+  // Rotate teapot -> up arrow
   if (evt.code == "ArrowUp") {
-	eulerY += 1.0;
+    viewRot += 3.0;
   }
 
-  // Pitch down -> down arrow
+  // Rotate teapot -> down arrow
   if (evt.code == "ArrowDown") {
-    eulerY -= 1.0;
+    viewRot -= 3.0;
   }
 
   // Increase speed -> +
   if (evt.code == "Equal") {
     // Camera travels down -z axis, so "negative" velocity when moving forward
-    velocity += 0.001;
-  }  
+    vec3.add(eyePt, eyePt, vec3.fromValues(0.0, 0.0, -1.0));
+  }
 
   // Decrease speed -> -
   if (evt.code == "Minus") {
-    velocity -= 0.001;
+    vec3.add(eyePt, eyePt, vec3.fromValues(0.0, 0.0, 1.0));
   }
 }
 
-/** Flight simulator view update */
+/**
+ * Update teapot animation frame
+ */
 function tick() {
   requestAnimationFrame(tick);
   // Check if fog should be enabled
-  /*
-  if(document.getElementById('r1').checked) {
-    fogDensity = 0.6;
+  if (document.getElementById('r2').checked) {
+    reflectionFlag = 1;
+    refractionFlag = 0;
+  } else if (document.getElementById('r1').checked) {
+    refractionFlag = 1;
+    reflectionFlag = 0;
   } else {
-    fogDensity = 0.0
-  }*/
+    reflectionFlag = 0;
+    refractionFlag = 0;
+  }
 
-  /*
-  // Display pitch on html
-  document.getElementById("pitch").innerHTML = "Pitch: " + pitchAngle + " Roll: " + rollAngle + " Speed: " + velocity * 1000;
   // Draw call*/
   draw();
 }

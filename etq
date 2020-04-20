@@ -1,0 +1,404 @@
+[33mcommit f375cd3bb2d02c6365e7bf55bf2943c20b302fe0[m[33m ([m[1;36mHEAD -> [m[1;32mmp1-animation[m[33m)[m
+Author: jamestimotiwu <architect.idol5@gmail.com>
+Date:   Sat Apr 18 23:27:56 2020 -0400
+
+    Sort of working orbits
+
+[33mcommit 53bfef340857bcd5a1cc9f1e6a357e0f987e9538[m[33m ([m[1;31morigin/mp1-animation[m[33m)[m
+Author: jamestimotiwu <architect.idol5@gmail.com>
+Date:   Sat Apr 18 22:53:18 2020 -0400
+
+    Model won't reflect correctly during orbit atm
+
+[33mcommit 1b79efb8d751f83e8d617024bd311f759de16a55[m
+Author: jamestimotiwu <architect.idol5@gmail.com>
+Date:   Sat Apr 18 19:24:53 2020 -0400
+
+    Fixed major issues with Lab4 glmatrix incompat
+
+[33mcommit 56298280ff558aed95376bf317d41adb5fe79624[m
+Author: jamestimotiwu <architect.idol5@gmail.com>
+Date:   Sat Apr 18 17:10:21 2020 -0400
+
+    Textures now loading
+
+[33mcommit ec8804e0a52c09878b84604eeb7b610d686cebd7[m
+Author: jamestimotiwu <architect.idol5@gmail.com>
+Date:   Sat Apr 18 16:50:27 2020 -0400
+
+    Separated shader program functions
+
+[33mcommit 6987de533cbfec8c575b754c8db686f8a7e465d7[m
+Author: jamestimotiwu <architect.idol5@gmail.com>
+Date:   Sat Apr 18 16:28:56 2020 -0400
+
+    Fixed non compiling shader prog
+
+[33mcommit 14a5459b020e52229614dcc062fe4b796d541f42[m
+Author: jamestimotiwu <architect.idol5@gmail.com>
+Date:   Sat Apr 18 12:04:33 2020 -0400
+
+    Attempt texturing cube
+
+[33mcommit ca574350688c18d26546dacb5d84697ebcfb602c[m
+Author: jamestimotiwu <architect.idol5@gmail.com>
+Date:   Sat Apr 18 11:13:41 2020 -0400
+
+    Working cube
+
+[33mcommit ac0f63041f34537dbae8a965dd6e9b3151b254a0[m
+Author: jamestimotiwu <architect.idol5@gmail.com>
+Date:   Sun Mar 15 19:10:52 2020 -0500
+
+    Update html from javascript for orientation states
+
+[33mcommit 991343a22377d640ed14c707f806170678b3ab56[m
+Author: jamestimotiwu <architect.idol5@gmail.com>
+Date:   Sun Mar 15 18:59:40 2020 -0500
+
+    Check if fog should be enabled / disabled
+
+[33mcommit 63332532b817189a94d9bf3c7f6cc207dae3f2c2[m
+Author: jamestimotiwu <architect.idol5@gmail.com>
+Date:   Sun Mar 15 18:48:00 2020 -0500
+
+    Fix fog
+
+[33mcommit 15276de0090b6c616783108d26933e4b91ebd269[m
+Author: jamestimotiwu <architect.idol5@gmail.com>
+Date:   Sun Mar 15 18:28:24 2020 -0500
+
+    Use eyept as camera location.. logically
+
+[33mcommit 6e453b858d839260aa2faf9bb964a3c12e5eb456[m
+Author: jamestimotiwu <architect.idol5@gmail.com>
+Date:   Sun Mar 15 18:23:40 2020 -0500
+
+    Proper translation
+
+[33mcommit df6c790793fdc273c3095b3039a85c1fd3049a67[m
+Author: jamestimotiwu <architect.idol5@gmail.com>
+Date:   Sun Mar 15 18:07:23 2020 -0500
+
+    Add fog
+
+[33mcommit 436fdd0d0f1429eb7149dc1bf184fa2a6adac6a1[m
+Author: jamestimotiwu <architect.idol5@gmail.com>
+Date:   Sun Mar 15 17:08:48 2020 -0500
+
+    Working translation
+
+[33mcommit c428a72998af1defaefdb1010569e85ac151f8e9[m
+Author: jamestimotiwu <architect.idol5@gmail.com>
+Date:   Sun Mar 15 12:52:33 2020 -0500
+
+    Updating pitch and roll on keypress
+
+[33mcommit 4dad5d19dd73976e21f8a40c17951b16172974aa[m
+Author: jamestimotiwu <architect.idol5@gmail.com>
+Date:   Sun Mar 15 12:41:32 2020 -0500
+
+    OOP keypress handling
+
+[33mcommit 206e4e8a54d5e22a18122325637068d9d3844204[m
+Author: jamestimotiwu <architect.idol5@gmail.com>
+Date:   Sun Mar 15 12:38:39 2020 -0500
+
+    Incorporate keypress handler
+
+[33mcommit cdef18f3ed203b7d59222635a099771c8ec99792[m
+Author: jamestimotiwu <architect.idol5@gmail.com>
+Date:   Sat Mar 14 11:45:16 2020 -0500
+
+    Using rotations
+
+[33mcommit 970799f39a9e0e524456b88146ebdd92390df598[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Thu Mar 5 22:47:50 2020 -0600
+
+    Playing with shading values
+
+[33mcommit 8a2af58bee9eea92cd14265cea79c49556342120[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Thu Mar 5 22:29:17 2020 -0600
+
+    Cleanup
+
+[33mcommit d4519da824c0632b9be6c700043cfbbc08ea981a[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Thu Mar 5 21:43:30 2020 -0600
+
+    Fixed similar getnormal issue:
+
+[33mcommit 7bb365fdf39c9810679ea5f55d95219f7235e271[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Thu Mar 5 21:42:10 2020 -0600
+
+    Fix generate terrain issue with misuse of getvertex function
+
+[33mcommit c0db3a296a8c64c666aa341211d8fcdf50234803[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Thu Mar 5 21:28:37 2020 -0600
+
+    Fixed draw terrain somehow
+
+[33mcommit e374958f3b3456d2b0041920bad45c2ce4a2afc3[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Thu Mar 5 21:20:13 2020 -0600
+
+    Fixed some rendering errors
+
+[33mcommit 207eeea4fcd7b0a39884b4b8527d41826f21f0ec[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Thu Mar 5 20:38:49 2020 -0600
+
+    Fix some compiliation errors
+
+[33mcommit af4d5df2ba7bb8ba5c61bb5dd91a947d5b8130c3[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Thu Mar 5 20:22:23 2020 -0600
+
+    Add draw terrain program
+
+[33mcommit 731652dc023c9280f812ca5b995b0d0dd5c6b32b[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Thu Mar 5 20:17:45 2020 -0600
+
+    Basic set lighting usage
+
+[33mcommit 0530659adbd87d9fbd64094a11f02270c86ac1af[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Thu Mar 5 20:16:23 2020 -0600
+
+    Add standard light constants
+
+[33mcommit 8b1128912ad0fbcf316acb5539ccc3e9986ea9fe[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Thu Mar 5 20:15:33 2020 -0600
+
+    Add light params
+
+[33mcommit 59b0558ddd0ce2ba7a1f760eebf78c24eaff016a[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Thu Mar 5 20:12:55 2020 -0600
+
+    Usage of sending matrix down to fragment shader detailed here; look at how it is linked as well while initializing uniforms
+
+[33mcommit f35ead6ad573c70f49961768504012cc93f23305[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Thu Mar 5 20:09:38 2020 -0600
+
+    Add uniform setting for light and materials to compute fragments
+
+[33mcommit a579b3bc2c3903c99f77d7ecb59026d2b052a3c6[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Thu Mar 5 20:06:58 2020 -0600
+
+    Add initialization of uniform values
+
+[33mcommit ad76d381dcf3be9921e472d9da4ae86919d5f697[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Thu Mar 5 19:55:37 2020 -0600
+
+    Refactor buffer loading; using uniform color buffer
+
+[33mcommit 3b082cbefcc9410697683ea6657333dc4b72963a[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Thu Mar 5 18:39:55 2020 -0600
+
+    Add stack operations for hierarichal modeling on model view matricies
+
+[33mcommit 1e5c5d5438da1847c47464648bb355da2a4ced79[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Thu Mar 5 18:32:27 2020 -0600
+
+    Create projection matrix
+
+[33mcommit cf35984a765f36b404c1df99b3286832e586292c[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Thu Mar 5 18:29:15 2020 -0600
+
+    Create view matrix in MV using lookat
+
+[33mcommit 41d625b0cf000491fef1fe823e194fbe3a686f61[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Thu Mar 5 17:50:19 2020 -0600
+
+    Set new canvas size
+
+[33mcommit 9a18708d18250b50461c119f9c3bb35897b8bff6[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Thu Mar 5 17:43:05 2020 -0600
+
+    Implement generate normals with glmatrix library
+
+[33mcommit 62f2ae2f8e98d11f2a78bbd6e5680306304b9361[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Thu Mar 5 17:17:30 2020 -0600
+
+    Implement generate terrain with glmatrix library
+
+[33mcommit 154324ad66f877f3e32cf8c6099e06bb13680f35[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Thu Mar 5 16:40:48 2020 -0600
+
+    Create function signatures/interface for terrain generator
+
+[33mcommit 2ea64adf1d6d0f6dc0a1e7b9c946c1df0dc52334[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Thu Mar 5 15:53:06 2020 -0600
+
+    Check z values and set fragment color based on height
+
+[33mcommit eba78a0382489ad6c2fb663e8bd1817d9b8410c9[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Thu Mar 5 13:31:14 2020 -0600
+
+    Blinn Phong extension of Phong
+
+[33mcommit 2f3bc4890df0806b20ac0aedf6e21744fe15f0a9[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Thu Mar 5 13:16:52 2020 -0600
+
+    Working normals
+
+[33mcommit e1855f40734182c0ff63a08980ef174f0e329c01[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Thu Mar 5 12:56:46 2020 -0600
+
+    Normalizing causing weird dark bug
+
+[33mcommit fbcf5550feb25bcd541acbc207104d41d6a1521a[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Wed Mar 4 23:03:12 2020 -0600
+
+    Added normal updating, need to fix
+
+[33mcommit bdfb36153469ed7812a5ce6d93a03129327e2124[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Wed Mar 4 20:52:57 2020 -0600
+
+    Randomly choose vertex to set delta
+
+[33mcommit 904c08b4bdcc02f76545b2ae7fcf4ab1d79b2030[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Wed Mar 4 20:46:06 2020 -0600
+
+    Set z values after creating flat triangle
+
+[33mcommit 86434b20467d7a37ed279a755ce7964df9df8efd[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Wed Mar 4 20:29:56 2020 -0600
+
+    New Lab3 trying to smooth out z (height) by getting z's of neighboring cells
+
+[33mcommit 81f49b6af8812a77b2401aacfde2ba6be7c83236[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Sun Feb 9 08:40:07 2020 -0600
+
+    Fix landscape shifting speed
+
+[33mcommit fceb4b883073d0826bcb170f30e8b852881c8ce2[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Sat Feb 8 22:55:48 2020 -0600
+
+    Own animation
+
+[33mcommit a4f3256ea78c37a0cfe4adebae745a630569ea20[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Fri Feb 7 22:50:24 2020 -0600
+
+    Pre-generate meshes
+
+[33mcommit 006ae79dd43a102fd3b49cb612189118e693ca97[m[33m ([m[1;31morigin/master[m[33m, [m[1;32mmaster[m[33m)[m
+Merge: dcca766 6639424
+Author: James <architect.idol5@gmail.com>
+Date:   Fri Feb 7 16:12:32 2020 -0600
+
+    Merge pull request #2 from jamestimotiwu/mp1
+    
+    MP1: Working Illini Logo and Animation
+
+[33mcommit 6639424ffe7685d636fc87853dd8bc9af0048e0f[m[33m ([m[1;31morigin/mp1[m[33m, [m[1;32mmp1[m[33m)[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Fri Feb 7 15:59:20 2020 -0600
+
+    Added radio button feature
+
+[33mcommit 10e70de793160f006a13f629a9964097db248f7a[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Fri Feb 7 15:34:07 2020 -0600
+
+    Refactor color and position buffers
+
+[33mcommit 8d3fcf7fccf7103378133617f45d476ca344046e[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Thu Feb 6 12:57:12 2020 -0600
+
+    Bouncing ball animate
+
+[33mcommit ea00f39abf9389f1a8cc0e84225e78be69618cfd[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Tue Feb 4 20:35:06 2020 -0600
+
+    Basic sine wave translation
+
+[33mcommit 41a1997e9ecbaa26d511e2077d557b8f1eb37b6e[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Tue Feb 4 10:35:29 2020 -0600
+
+    Added glMatrix; added bouncing animation
+
+[33mcommit 6a8c30ef31f571a267ff41cd0cd8ab951f22c6fb[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Mon Feb 3 21:51:27 2020 -0600
+
+    Removed unneccessary variables in shader program
+
+[33mcommit 9bd5904df67627dfbac9e18f43e4b8ba09f44735[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Mon Feb 3 20:44:33 2020 -0600
+
+    Working regular color settings on shader
+
+[33mcommit bc60a13a5fa1ad3c1e8f1c9ec94c602f647b8506[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Mon Feb 3 18:52:27 2020 -0600
+
+    Parameterized rectangles
+
+[33mcommit 0a83f0fa7c630dbc4614d36ff37c48276bf12c0c[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Mon Feb 3 18:22:42 2020 -0600
+
+    Using 3 rectangles
+
+[33mcommit 00e0c694bb308a2a493826da1825f95e68aa0f5e[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Sun Feb 2 14:45:08 2020 -0600
+
+    Interesting shadow effect with overlay
+
+[33mcommit 5e3f0e46300dbe1dbe3de4d965ae88357e1e64c4[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Sun Feb 2 14:39:27 2020 -0600
+
+    Working I
+
+[33mcommit e04e4d2a3a154979f735ce247acb6021affdab13[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Sat Feb 1 18:57:54 2020 -0600
+
+    Added scaling transformation in shader, initializeBuffers, initializeShaders
+
+[33mcommit 7553d1625fe44fa9341bf824682113db4600ec52[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Sat Feb 1 17:01:46 2020 -0600
+
+    Added offsetting for easily adjustable geometry to maintain shape
+
+[33mcommit dcca766ab2de57b07e5a2d948fdb42dd3d096710[m
+Author: James Timotiwu <architect.idol5@gmail.com>
+Date:   Sat Feb 1 16:50:30 2020 -0600
+
+    Initial commit for MP1
