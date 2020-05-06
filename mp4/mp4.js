@@ -84,9 +84,7 @@ var kEdgeBlack = [0.0,0.0,0.0];
 /** @global Edge color for wireframe rendering */
 var kEdgeWhite = [1.0,1.0,1.0];
 
-
-/** @global Fog density */
-var fogDensity = 0.6
+var particleSet = [];
 
 /**
  * Get WebGL context for canvas
@@ -340,7 +338,8 @@ function startup() {
   //initializeTerrain();
   initializeSphere();
   gl.clear(gl.COLOR_BUFFER_BIT);
-  draw();
+  //draw();
+  particleSet.push(new Sphere());
   tick();
 }
 
@@ -401,7 +400,11 @@ function tick() {
   // Display pitch on html
   document.getElementById("pitch").innerHTML = "Pitch: " + pitchAngle + " Roll: " + rollAngle + " Speed: " + velocity * 1000;
 
-  draw();
+  // Test drawing one particle
+  particleSet[0].draw();
+
+  //draw();
+  
 }
 
 /**

@@ -17,7 +17,8 @@ class Sphere {
 	constructor() {
 		this.pos = vec3.create();
 		this.velocity = vec3.create();
-		this.radius = vec3.fromValues(Math.random(), Math.random(), Math.random());
+		this.radius = Math.random()
+		this.radiusVec = vec3.fromValues(this.radius, this.radius, this.radius)
 		this.color = vec3.fromValues(Math.random(), 
 									Math.random(), 
 									Math.random())
@@ -31,10 +32,8 @@ class Sphere {
 		generatePerspective();
 		generateView();
 		mvPush(mvMatrix);
-		//mat4.rotateY(mvMatrix, mvMatrix, degToRad(viewRot + 30));
-		//mat4.rotateX(mvMatrix, mvMatrix, degToRad(-70));
 		
-		mat4.scale(mvMatrix, mvMatrix, radi); 
+		mat4.scale(mvMatrix, mvMatrix, this.radiusVec); 
 		setShaderModelView();
 		setShaderNormal(mvMatrix);
 		mvPop();
@@ -42,7 +41,7 @@ class Sphere {
 		setShaderProjection();
 		
 		setLightUniforms(lightPosition,lAmbient,lDiffuse,lSpecular);
-		setMaterialUniforms(shininess,kAmbient,kTerrainDiffuse,kSpecular);
+		setMaterialUniforms(shininess,kAmbient,this.color,kSpecular);
 		drawSphere();
 	}
 	
