@@ -122,9 +122,6 @@ function draw() {
   generateView();
   /* Set terrain in front of view */
   mvPush(mvMatrix);
-  //mat4.translate(mvMatrix, mvMatrix,transformVec);
-  mat4.rotateY(mvMatrix, mvMatrix, degToRad(viewRot + 30));
-  mat4.rotateX(mvMatrix, mvMatrix, degToRad(-70));
   //mvPush(mvMatrix);
   let radi = vec3.fromValues(0.2, 0.2, 0.2);
   

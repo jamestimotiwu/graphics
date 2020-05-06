@@ -22,6 +22,30 @@ class Sphere {
 									Math.random(), 
 									Math.random())
 	}
+
+
+	draw() {	
+
+		gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+		generatePerspective();
+		generateView();
+		mvPush(mvMatrix);
+		//mat4.rotateY(mvMatrix, mvMatrix, degToRad(viewRot + 30));
+		//mat4.rotateX(mvMatrix, mvMatrix, degToRad(-70));
+		
+		mat4.scale(mvMatrix, mvMatrix, radi); 
+		setShaderModelView();
+		setShaderNormal(mvMatrix);
+		mvPop();
+
+		setShaderProjection();
+		
+		setLightUniforms(lightPosition,lAmbient,lDiffuse,lSpecular);
+		setMaterialUniforms(shininess,kAmbient,kTerrainDiffuse,kSpecular);
+		drawSphere();
+	}
+	
 }
 
 /**
