@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Terrain</title>
+        <meta charset="utf-8">
+    </head>
+
+    <script id="vertex-shader" type="x-shader">
+        attribute vec3 a_vertex;
+        attribute vec3 a_normal;
+        //attribute vec4 a_color
+        
+        //varying vec4 v_color
+        varying vec3 vectorToLightSource;
+        varying vec3 normalEye;
+        varying vec3 viewVectorEye;
+        varying vec3 vDiffuse;
+
+        // Model-view matrix
+        uniform vec3 uLightPosition;
+        uniform mat4 uMVMatrix;
+        uniform mat4 uPMatrix;
+        uniform mat3 uNMatrix;
+
+        void main(void) {
+            float threshold1 = -0.02;
+            float threshold2 = 0.02;
+            float threshold3 = 0.04;
+        
+            if(a_vertex.z <= threshold1) {
+                vDiffuse = vec3(0.0, 0.0, 255.0/255.0);
+            } else if (a_vertex.z > threshold1 && a_vertex.z <= threshold2) {
+                vDiffuse = vec3(0.0, 255.0/255.0, 0.0);
+            } else if (a_vertex.z > threshold2 && a_vertex.z <= threshold3) {
+                vDiffuse = vec3(0.0, 255.0/255.0, 0.0);
+            } else {
+                vDiffuse = vec3(128.0/255.0, 128.0/255.0, 128.0/255.0);
+            }
+
+            // Get the vertex position in eye coordinates
+            vec4 vertexPositionEye4 = uMVMatrix * vec4(a_vertex, 1.0);
+            vec3 vertexPositionEye3 = vertexPositionEye4.xyz / vertexPositionEye4.w;
+          
+            // Calculate the vector (l) to the light source
+            vectorToLightSource = normalize(uLightPosition - vertexPositionEye3);
+            
+            // Transform the normal (n) to eye coordinates
+            normalEye = normalize(uNMatrix * a_normal);
+            
+            // The camera in eye coordinates is located in the origin and is pointing
+            // along the negative z-axis. Calculate viewVector (v) 
+            // in eye coordinates as:
+            // (0.0, 0.0, 0.0) - vertexPositionEye3
+            viewVectorEye = -normalize(vertexPositionEye3);
+
+            // Sum up all three reflection components and send to the fragment shader
+            gl_Position = uPMatrix*uMVMatrix*vec4(a_vertex, 1.0);
+        }
+    </script>
+
+    <script id="fragment-shader" type="x-shader">
+        precision mediump float;
+        //varying vec4 v_color;
+
+        varying vec3 vectorToLightSource;
+        varying vec3 normalEye;
+        varying vec3 viewVectorEye;
+        varying vec3 vDiffuse;
+
+        uniform vec3 uAmbientLightColor;
+        uniform vec3 uDiffuseLightColor;
+        uniform vec3 uSpecularLightColor;
+        
+        uniform vec3 uKAmbient;
+        uniform vec3 uKDiffuse;
+        uniform vec3 uKSpecular;
+        uniform float uShininess;
+        uniform float uFogDensity;
+
+        void main(void) {
+            // Calculate n dot l for diffuse lighting
+            float diffuseLightWeightning = max(dot(normalEye, 
+                                            vectorToLightSource), 0.0);
+                                               
+            // Calculate the reflection vector (r) that is needed for specular light
+            vec3 reflectionVector = normalize(reflect(-vectorToLightSource, 
+                                                     normalEye));
+            
+            float rdotv = max(dot(reflectionVector, viewVectorEye), 0.0);
+        
+            // Use halfway vector for Blinn Phong
+            vec3 halfwayVector = normalize(vectorToLightSource + viewVectorEye);
+            float hdotn = max(dot(halfwayVector, normalEye), 0.2);
+            
+            float specularLightWeightning = pow(hdotn, uShininess);
+
+            // Add fog parameters
+            float fogCoord = (gl_FragCoord.z/gl_FragCoord.w);
+            float log2 = 1.442695;
+            float fogDensity = uFogDensity;
+            float fogFactor = exp2(-fogDensity*fogDensity*fogCoord*fogCoord*log2);
+            fogFactor = clamp(fogFactor, 0.0, 1.0);
+            vec4 fogColor = vec4(1.0,1.0,1.0,1.0);
+        
+            // Sum up all three reflection components and send to the fragment shader
+            gl_FragColor = vec4(((uAmbientLightColor*uKAmbient)
+                        + (uDiffuseLightColor*vDiffuse) * diffuseLightWeightning
+                        + ((uSpecularLightColor*uKSpecular) * specularLightWeightning)),1.0);
+                        
+            gl_FragColor = mix(fogColor, gl_FragColor, fogFactor);
+        }
+    </script>
+    <script src="gl-matrix-min.js"></script>
+    <script type="text/javascript" src="webgl-utils.js"></script>
+    <script src="sphere.js"></script>
+    <script src="mp4.js"></script>
+    <body onload="startup();">
+        <canvas id="mp1GLCanvas" width="600" height="600"></canvas>
+    </body>
+    <body>
+        <p id="pitch">Pitch: </p>
+        <p>
+            Press left arrow key to roll plane to left. <br>
+            Press right arrow key to roll plane to right. <br>
+            Press up arrow key to pitch plane up. <br>
+            Press down arrow key to pitch plane down. <br>
+            Press +/- to increase/decrease speed. <br>
+        </p>
+        <div id="animationToggle">
+            Enable fog:
+            <input type="checkbox" id="r1" name="Animation" value=1 checked="checked">
+        </div>
+    </body>
+</html>
