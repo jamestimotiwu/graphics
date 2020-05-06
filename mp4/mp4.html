@@ -23,11 +23,6 @@
         uniform mat3 uNMatrix;
 
         void main(void) {
-            float threshold1 = -0.02;
-            float threshold2 = 0.02;
-            float threshold3 = 0.04;
-        
-            vDiffuse = vec3(128.0/255.0, 128.0/255.0, 128.0/255.0);
 
             // Get the vertex position in eye coordinates
             vec4 vertexPositionEye4 = uMVMatrix * vec4(a_vertex, 1.0);
@@ -57,7 +52,6 @@
         varying vec3 vectorToLightSource;
         varying vec3 normalEye;
         varying vec3 viewVectorEye;
-        varying vec3 vDiffuse;
 
         uniform vec3 uAmbientLightColor;
         uniform vec3 uDiffuseLightColor;
@@ -89,7 +83,7 @@
         
             // Sum up all three reflection components and send to the fragment shader
             gl_FragColor = vec4(((uAmbientLightColor*uKAmbient)
-                        + (uDiffuseLightColor*vDiffuse) * diffuseLightWeightning
+                        + (uDiffuseLightColor*uKDiffuse) * diffuseLightWeightning
                         + ((uSpecularLightColor*uKSpecular) * specularLightWeightning)),1.0);
                         
         }

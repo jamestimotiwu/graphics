@@ -118,7 +118,6 @@ function draw() {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   generatePerspective();
-  //gl.drawElements(gl.TRIANGLES, ,num)
   /* Generate view */
   generateView();
   /* Set terrain in front of view */
