@@ -114,32 +114,30 @@ function getGLContext(canvas) {
 function draw() {
   let transformVec = vec3.create();
 
-  gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  //gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+  //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   generatePerspective();
   //gl.drawElements(gl.TRIANGLES, ,num)
   /* Generate view */
   generateView();
   /* Set terrain in front of view */
-  //mvPush(mvMatrix);
-  //vec3.set(transformVec,0.0,-0.25, -0.3);
-  //vec3.set(position, 0, -0.25, position[2] + 0.01)
-  mat4.translate(mvMatrix, mvMatrix,transformVec);
+  mvPush(mvMatrix);
+  //mat4.translate(mvMatrix, mvMatrix,transformVec);
   mat4.rotateY(mvMatrix, mvMatrix, degToRad(viewRot + 30));
   mat4.rotateX(mvMatrix, mvMatrix, degToRad(-70));
   //mvPush(mvMatrix);
-  mat4.scale(mvMatrix, mvMatrix, 0.2); 
+  let radi = vec3.fromValues(0.2, 0.2, 0.2);
+  
+  mat4.scale(mvMatrix, mvMatrix, radi); 
   setShaderModelView();
   setShaderNormal(mvMatrix);
-  //mvPop();
+  mvPop();
 
   setShaderProjection();
   
   setLightUniforms(lightPosition,lAmbient,lDiffuse,lSpecular);
-  setFogUniform(fogDensity);
   setMaterialUniforms(shininess,kAmbient,kTerrainDiffuse,kSpecular);
-  //drawTerrain();
   drawSphere();
 }
 
@@ -397,33 +395,6 @@ function tick() {
   requestAnimationFrame(tick);
   let translationVec = vec3.create();
 
-  /** Euler to quaternion */
-  quat.fromEuler(quatOrientation, pitchAngle, 0.0, rollAngle);
-  vec3.transformQuat(up, up, quatOrientation);
-  vec3.transformQuat(viewDir, viewDir, quatOrientation);
-
-  // Scale by view direction so camera travels towards eyepoint
-
-  // Update view vectors (up, viewDir, eyePt)
-  generateView();
-  
-  mvPush(mvMatrix);
-
-  // Standard view matrix
-  mat4.rotateY(mvMatrix, mvMatrix, degToRad(viewRot + 30));
-  mat4.rotateX(mvMatrix, mvMatrix, degToRad(-70));
-  
-  // vec3 for scaling particle
-  let radi = vec3.fromValues(0.2, 0.2, 0.2);
-  
-  mat4.scale(mvMatrix, mvMatrix, radi); 
-  
-  setShaderModelView();
-  setShaderNormal(mvMatrix);
-  mvPop();
-
-  setShaderProjection();
-
   // Check if fog should be enabled
   if(document.getElementById('r1').checked) {
     fogDensity = 0.6;
@@ -434,11 +405,7 @@ function tick() {
   // Display pitch on html
   document.getElementById("pitch").innerHTML = "Pitch: " + pitchAngle + " Roll: " + rollAngle + " Speed: " + velocity * 1000;
 
-  setFogUniform(fogDensity);
-
-  // Draw call
-  //drawTerrain();
-  drawSphere();
+  draw();
 }
 
 /**
