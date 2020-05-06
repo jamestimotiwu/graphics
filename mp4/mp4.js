@@ -332,8 +332,12 @@ function startup() {
   //initializeTerrain();
   initializeSphere();
   gl.clear(gl.COLOR_BUFFER_BIT);
-  //draw();
-  particleSet.push(new Sphere());
+  
+  /* Create particle set */
+  for (let i = 0; i < 50; i++) {
+	particleSet.push(new Sphere());
+  }
+
   tick();
 }
 
@@ -395,8 +399,9 @@ function tick() {
   document.getElementById("pitch").innerHTML = "Pitch: " + pitchAngle + " Roll: " + rollAngle + " Speed: " + velocity * 1000;
 
   // Test drawing one particle
-  particleSet[0].draw();
-
+  for (let i = 0; i < 50; i++) {
+	particleSet[i].draw();
+  }
   //draw();
   
 }
