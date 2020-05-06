@@ -398,6 +398,7 @@ function tick() {
   // Display pitch on html
   document.getElementById("pitch").innerHTML = "Pitch: " + pitchAngle + " Roll: " + rollAngle + " Speed: " + velocity * 1000;
 
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   // Test drawing one particle
   for (let i = 0; i < 50; i++) {
 	particleSet[i].draw();
