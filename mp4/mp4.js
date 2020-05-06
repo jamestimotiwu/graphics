@@ -45,7 +45,7 @@ var quatOrientation = quat.create();
 
 /** View globals */
 /** @global Camera location in world coordinates */
-var eyePt = vec3.fromValues(0.0, 0.3, 2.0);
+var eyePt = vec3.fromValues(0.0, 0.0, 2.0);
 
 /** @global Direction of view in world coordinates (down -z axis)*/
 var viewDir = vec3.fromValues(0.0, 0.0, -1.0);
@@ -73,16 +73,10 @@ var lSpecular =[0.2,0.5,1.0];
 //Material parameters
 /** @global Ambient material color/intensity for Phong reflection */
 var kAmbient = [1.0,1.0,1.0];
-/** @global Diffuse material color/intensity for Phong reflection */
-var kTerrainDiffuse = [150.0/255.0,163.0/255.0,63.0/255.0];
 /** @global Specular material color/intensity for Phong reflection */
 var kSpecular = [1.0,1.0,1.0];
 /** @global Shininess exponent for Phong reflection */
 var shininess = 20;
-/** @global Edge color fpr wireframeish rendering */
-var kEdgeBlack = [0.0,0.0,0.0];
-/** @global Edge color for wireframe rendering */
-var kEdgeWhite = [1.0,1.0,1.0];
 
 var particleSet = [];
 
