@@ -17,7 +17,7 @@ class Sphere {
 	constructor() {
 		this.pos = vec3.create();
 		this.velocity = vec3.create();
-		this.radius = 1.0;
+		this.radius = vec3.fromValues(Math.random(), Math.random(), Math.random());
 		this.color = vec3.fromValues(Math.random(), 
 									Math.random(), 
 									Math.random())

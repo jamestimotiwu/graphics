@@ -403,8 +403,6 @@ function tick() {
   vec3.transformQuat(viewDir, viewDir, quatOrientation);
 
   // Scale by view direction so camera travels towards eyepoint
-  //vec3.scale(translationVec, viewDir, velocity);
-  //vec3.add(eyePt, eyePt, translationVec);
 
   // Update view vectors (up, viewDir, eyePt)
   generateView();
