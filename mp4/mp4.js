@@ -62,13 +62,13 @@ var t = 0;
 
 /** Lighting parameters */
 /** @global Light position in VIEW coordinates */
-var lightPosition = [0,1,3];
+var lightPosition = [0,0,5];
 /** @global Ambient light color/intensity for Phong reflection */
 var lAmbient = [0.1,0.1,0.1];
 /** @global Diffuse light color/intensity for Phong reflection */
-var lDiffuse = [0.7,1.0,0.3];
+var lDiffuse = [0.7,0.7,0.1];
 /** @global Specular light color/intensity for Phong reflection */
-var lSpecular =[0.2,0.5,1.0];
+var lSpecular =[0.2,0.5,0.5];
 
 //Material parameters
 /** @global Ambient material color/intensity for Phong reflection */
@@ -76,7 +76,7 @@ var kAmbient = [1.0,1.0,1.0];
 /** @global Specular material color/intensity for Phong reflection */
 var kSpecular = [1.0,1.0,1.0];
 /** @global Shininess exponent for Phong reflection */
-var shininess = 20;
+var shininess = 30;
 
 var particleSet = [];
 
@@ -100,34 +100,6 @@ function getGLContext(canvas) {
      return context;
 }
 
-/**
- * Draw function to set up perspective, view, and terrain
- */
-function draw() {
-  let transformVec = vec3.create();
-
-  gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-  generatePerspective();
-  /* Generate view */
-  generateView();
-  /* Set terrain in front of view */
-  mvPush(mvMatrix);
-  //mvPush(mvMatrix);
-  let radi = vec3.fromValues(0.2, 0.2, 0.2);
-  
-  mat4.scale(mvMatrix, mvMatrix, radi); 
-  setShaderModelView();
-  setShaderNormal(mvMatrix);
-  mvPop();
-
-  setShaderProjection();
-  
-  setLightUniforms(lightPosition,lAmbient,lDiffuse,lSpecular);
-  setMaterialUniforms(shininess,kAmbient,kTerrainDiffuse,kSpecular);
-  drawSphere();
-}
 
 /**
  * Pass model view matrix in global to shader programs
@@ -334,7 +306,7 @@ function startup() {
   gl.clear(gl.COLOR_BUFFER_BIT);
   
   /* Create particle set */
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < 10; i++) {
 	particleSet.push(new Sphere());
   }
 
@@ -344,6 +316,14 @@ function startup() {
 /** Keyboard handler */
 document.addEventListener('keydown', keyboardHandler);
 
+/** Mouse handler */
+document.addEventListener('mousedown', mouseHandler); 
+
+function mouseHandler(evt) {
+	particleSet.push(new Sphere());
+	console.log(evt.code)
+}
+
 /** Current euler angle values */
 var rollAngle = 0.0;
 var pitchAngle = 0.0;
@@ -351,6 +331,7 @@ var velocity = 0.001;
 
 /** Keyboard event handler  */
 function keyboardHandler(evt) {
+  console.log(evt.code)
   // Roll left -> left arrow
   if (evt.code == "ArrowLeft") {
     rollAngle += 0.05;
@@ -400,7 +381,7 @@ function tick() {
 
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   // Test drawing one particle
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < particleSet.length; i++) {
 	particleSet[i].draw();
   }
   //draw();

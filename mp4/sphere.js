@@ -17,18 +17,17 @@ class Sphere {
 	constructor() {
 		this.pos = vec3.create();
 		this.velocity = vec3.create();
-		this.radius = (2 + Math.random() * 2) / 40;
+		this.radius = (2 + Math.random()) / 50;
 		this.radiusVec = vec3.fromValues(this.radius, this.radius, this.radius)
 		this.color = vec3.fromValues(Math.random(), 
 									Math.random(), 
 									Math.random())
-		vec3.random(this.pos, 5);
+		vec3.random(this.pos, 9);
 	}
 
 
 	draw() {	
 		gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
-		//gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		generatePerspective();
 		generateView();
 		mvPush(mvMatrix);
