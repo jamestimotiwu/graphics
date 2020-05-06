@@ -123,7 +123,7 @@ function draw() {
   generateView();
   /* Set terrain in front of view */
   //mvPush(mvMatrix);
-  vec3.set(transformVec,0.0,-0.25, -0.3);
+  //vec3.set(transformVec,0.0,-0.25, -0.3);
   //vec3.set(position, 0, -0.25, position[2] + 0.01)
   mat4.translate(mvMatrix, mvMatrix,transformVec);
   mat4.rotateY(mvMatrix, mvMatrix, degToRad(viewRot + 30));
@@ -403,8 +403,8 @@ function tick() {
   vec3.transformQuat(viewDir, viewDir, quatOrientation);
 
   // Scale by view direction so camera travels towards eyepoint
-  vec3.scale(translationVec, viewDir, velocity);
-  vec3.add(eyePt, eyePt, translationVec);
+  //vec3.scale(translationVec, viewDir, velocity);
+  //vec3.add(eyePt, eyePt, translationVec);
 
   // Update view vectors (up, viewDir, eyePt)
   generateView();
