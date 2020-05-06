@@ -114,8 +114,8 @@ function getGLContext(canvas) {
 function draw() {
   let transformVec = vec3.create();
 
-  //gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
-  //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   generatePerspective();
   //gl.drawElements(gl.TRIANGLES, ,num)
