@@ -23,6 +23,7 @@ class Sphere {
 									Math.random(), 
 									Math.random())
 		vec3.random(this.pos, 9);
+		vec3.random(this.velocity, 0.1);
 	}
 
 
@@ -33,6 +34,8 @@ class Sphere {
 		mvPush(mvMatrix);
 		
 		mat4.scale(mvMatrix, mvMatrix, this.radiusVec);
+		
+		this.moveSphere();
 
 		mat4.translate(mvMatrix, mvMatrix, this.pos);
 		setShaderModelView();
@@ -44,6 +47,23 @@ class Sphere {
 		setLightUniforms(lightPosition,lAmbient,lDiffuse,lSpecular);
 		setMaterialUniforms(shininess,kAmbient,this.color,kSpecular);
 		drawSphere();
+	}
+
+	moveSphere() {
+		var add = vec3.create()
+		/* position = position + velocity */
+		vec3.add(this.pos, this.pos, this.velocity);
+
+		/* detect collision */
+		for (let i = 0; i < this.pos.length; i++) {
+			if (this.pos[i] < -9 || this.pos[i] > 9) {
+				if (this.pos[i] < 0) {
+					this.pos[i] = -9;
+				} else {
+					this.pos[i] = 9;
+				}
+			}
+		}
 	}
 	
 }
