@@ -322,10 +322,15 @@ document.addEventListener('keydown', keyboardHandler);
 document.addEventListener('mousedown', mouseHandler); 
 
 function mouseHandler(evt) {
-	for (let i = 0; i < numInitialSpheres; i++) {
-		particleSet.push(new Sphere());
+	x = evt.offsetX;
+	y = evt.offsetY;
+
+	if (x < 600 && y < 600) {
+		for (let i = 0; i < numInitialSpheres; i++) {
+			particleSet.push(new Sphere());
+		}
 	}
-	console.log(evt.code)
+	console.log(evt.offsetY)
 }
 
 /** Current euler angle values */
@@ -367,6 +372,11 @@ function keyboardHandler(evt) {
   if (evt.code == "Minus") {
     numInitialSpheres -= 1;
   }
+}
+
+function resetCanvas() {
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	particleSet = [];
 }
 
 /** Flight simulator view update */

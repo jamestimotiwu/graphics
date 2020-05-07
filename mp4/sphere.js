@@ -23,9 +23,8 @@ class Sphere {
 									Math.random(), 
 									Math.random())
 		this.drag = 0.95;
-		this.acceleration = vec3.fromValues(0, -0.5, 0);
-		vec3.random(this.pos, 9);
-		vec3.random(this.velocity, 0.1);
+		this.acceleration = vec3.fromValues(0, -0.3, 0);
+		vec3.random(this.velocity, 0.5);
 	}
 
 
@@ -64,7 +63,7 @@ class Sphere {
 				} else {
 					this.pos[i] = 9;
 				}
-				this.velocity[i] = -0.5 * this.velocity[i];
+				this.velocity[i] = -1.0 * this.velocity[i];
 			}
 		}
 	}
