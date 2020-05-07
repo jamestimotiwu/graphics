@@ -22,6 +22,8 @@ class Sphere {
 		this.color = vec3.fromValues(Math.random(), 
 									Math.random(), 
 									Math.random())
+		this.drag = 0.95;
+		this.acceleration = vec3.fromValues(0, -0.5, 0);
 		vec3.random(this.pos, 9);
 		vec3.random(this.velocity, 0.1);
 	}
@@ -36,7 +38,7 @@ class Sphere {
 		mat4.scale(mvMatrix, mvMatrix, this.radiusVec);
 		
 		this.moveSphere();
-
+		this.newVelocity();
 		mat4.translate(mvMatrix, mvMatrix, this.pos);
 		setShaderModelView();
 		setShaderNormal(mvMatrix);
@@ -62,8 +64,16 @@ class Sphere {
 				} else {
 					this.pos[i] = 9;
 				}
+				this.velocity[i] = -0.5 * this.velocity[i];
 			}
 		}
+	}
+
+	newVelocity() {
+		let add = vec3.create()
+		vec3.scale(this.velocity, this.velocity, Math.pow(this.drag, 0.1));
+		vec3.scale(add, this.acceleration, 0.1);
+		vec3.add(this.velocity, this.velocity, add);
 	}
 	
 }

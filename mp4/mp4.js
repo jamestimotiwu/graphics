@@ -313,6 +313,8 @@ function startup() {
   tick();
 }
 
+var numInitialSpheres = 1;
+
 /** Keyboard handler */
 document.addEventListener('keydown', keyboardHandler);
 
@@ -320,7 +322,9 @@ document.addEventListener('keydown', keyboardHandler);
 document.addEventListener('mousedown', mouseHandler); 
 
 function mouseHandler(evt) {
-	particleSet.push(new Sphere());
+	for (let i = 0; i < numInitialSpheres; i++) {
+		particleSet.push(new Sphere());
+	}
 	console.log(evt.code)
 }
 
@@ -328,6 +332,7 @@ function mouseHandler(evt) {
 var rollAngle = 0.0;
 var pitchAngle = 0.0;
 var velocity = 0.001;
+
 
 /** Keyboard event handler  */
 function keyboardHandler(evt) {
@@ -355,12 +360,12 @@ function keyboardHandler(evt) {
   // Increase speed -> +
   if (evt.code == "Equal") {
     // Camera travels down -z axis, so "negative" velocity when moving forward
-    velocity += 0.001;
+	numInitialSpheres += 1;
   }  
 
   // Decrease speed -> -
   if (evt.code == "Minus") {
-    velocity -= 0.001;
+    numInitialSpheres -= 1;
   }
 }
 
@@ -377,7 +382,7 @@ function tick() {
   }
 
   // Display pitch on html
-  document.getElementById("pitch").innerHTML = "Pitch: " + pitchAngle + " Roll: " + rollAngle + " Speed: " + velocity * 1000;
+  document.getElementById("pitch").innerHTML = "Initial spheres: " + numInitialSpheres;
 
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   // Test drawing one particle
