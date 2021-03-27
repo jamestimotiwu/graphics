@@ -3,7 +3,7 @@
  * @author James Timotiwu <jit2@illinois.edu>
  */
 
-const { mat4, mat3, vec3, vec4, quat } = glMatrix;
+const { mat4, mat3, vec3, quat } = glMatrix;
 
 /** Rendering globals */
 /** @global WebGL context */
@@ -19,7 +19,7 @@ var vertexBuffer;
 /** @global Mesh position vertex set
  *  Indexes are mapped to same color index
 */
-var particleSet = []
+var meshSet = []
 
 /** Transformation globals */
 /** @global Modelview matrix*/
@@ -45,7 +45,7 @@ var quatOrientation = quat.create();
 
 /** View globals */
 /** @global Camera location in world coordinates */
-var eyePt = vec3.fromValues(0.0, 0.0, 2.0);
+var eyePt = vec3.fromValues(0.0, 0.3, 2.0);
 
 /** @global Direction of view in world coordinates (down -z axis)*/
 var viewDir = vec3.fromValues(0.0, 0.0, -1.0);
@@ -62,23 +62,31 @@ var t = 0;
 
 /** Lighting parameters */
 /** @global Light position in VIEW coordinates */
-var lightPosition = [0,0,5];
+var lightPosition = [0,1,3];
 /** @global Ambient light color/intensity for Phong reflection */
 var lAmbient = [0.1,0.1,0.1];
 /** @global Diffuse light color/intensity for Phong reflection */
-var lDiffuse = [0.7,0.7,0.1];
+var lDiffuse = [0.7,1.0,0.3];
 /** @global Specular light color/intensity for Phong reflection */
-var lSpecular =[0.2,0.5,0.5];
+var lSpecular =[0.2,0.5,1.0];
 
 //Material parameters
 /** @global Ambient material color/intensity for Phong reflection */
 var kAmbient = [1.0,1.0,1.0];
+/** @global Diffuse material color/intensity for Phong reflection */
+var kTerrainDiffuse = [150.0/255.0,163.0/255.0,63.0/255.0];
 /** @global Specular material color/intensity for Phong reflection */
 var kSpecular = [1.0,1.0,1.0];
 /** @global Shininess exponent for Phong reflection */
-var shininess = 30;
+var shininess = 20;
+/** @global Edge color fpr wireframeish rendering */
+var kEdgeBlack = [0.0,0.0,0.0];
+/** @global Edge color for wireframe rendering */
+var kEdgeWhite = [1.0,1.0,1.0];
 
-var particleSet = [];
+
+/** @global Fog density */
+var fogDensity = 0.6
 
 /**
  * Get WebGL context for canvas
@@ -100,6 +108,39 @@ function getGLContext(canvas) {
      return context;
 }
 
+/**
+ * Draw function to set up perspective, view, and terrain
+ */
+function draw() {
+  let transformVec = vec3.create();
+
+  gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  generatePerspective();
+  //gl.drawElements(gl.TRIANGLES, ,num)
+  /* Generate view */
+  generateView();
+  /* Set terrain in front of view */
+  //mvPush(mvMatrix);
+  vec3.set(transformVec,0.0,-0.25, -0.3);
+  //vec3.set(position, 0, -0.25, position[2] + 0.01)
+  mat4.translate(mvMatrix, mvMatrix,transformVec);
+  mat4.rotateY(mvMatrix, mvMatrix, degToRad(viewRot + 30));
+  mat4.rotateX(mvMatrix, mvMatrix, degToRad(-70));
+  //mvPush(mvMatrix);
+  
+  setShaderModelView();
+  setShaderNormal(mvMatrix);
+  //mvPop();
+
+  setShaderProjection();
+  
+  setLightUniforms(lightPosition,lAmbient,lDiffuse,lSpecular);
+  setFogUniform(fogDensity);
+  setMaterialUniforms(shininess,kAmbient,kTerrainDiffuse,kSpecular);
+  drawTerrain();
+}
 
 /**
  * Pass model view matrix in global to shader programs
@@ -301,47 +342,22 @@ function startup() {
   //initializeTerrain();
   initializeShaderProgram();
   initializeBuffers();
-  //initializeTerrain();
-  initializeSphere();
+  initializeTerrain();
   gl.clear(gl.COLOR_BUFFER_BIT);
-  
-  /* Create particle set */
-  for (let i = 0; i < 10; i++) {
-	particleSet.push(new Sphere());
-  }
-
+  draw();
   tick();
 }
 
-var numInitialSpheres = 1;
-
 /** Keyboard handler */
 document.addEventListener('keydown', keyboardHandler);
-
-/** Mouse handler */
-document.addEventListener('mousedown', mouseHandler); 
-
-function mouseHandler(evt) {
-	x = evt.offsetX;
-	y = evt.offsetY;
-
-	if (x < 600 && y < 600) {
-		for (let i = 0; i < numInitialSpheres; i++) {
-			particleSet.push(new Sphere());
-		}
-	}
-	console.log(evt.offsetY)
-}
 
 /** Current euler angle values */
 var rollAngle = 0.0;
 var pitchAngle = 0.0;
 var velocity = 0.001;
 
-
 /** Keyboard event handler  */
 function keyboardHandler(evt) {
-  console.log(evt.code)
   // Roll left -> left arrow
   if (evt.code == "ArrowLeft") {
     rollAngle += 0.05;
@@ -365,24 +381,43 @@ function keyboardHandler(evt) {
   // Increase speed -> +
   if (evt.code == "Equal") {
     // Camera travels down -z axis, so "negative" velocity when moving forward
-	numInitialSpheres += 1;
+    velocity += 0.001;
   }  
 
   // Decrease speed -> -
   if (evt.code == "Minus") {
-    numInitialSpheres -= 1;
+    velocity -= 0.001;
   }
-}
-
-function resetCanvas() {
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-	particleSet = [];
 }
 
 /** Flight simulator view update */
 function tick() {
   requestAnimationFrame(tick);
   let translationVec = vec3.create();
+
+  /** Euler to quaternion */
+  quat.fromEuler(quatOrientation, pitchAngle, 0.0, rollAngle);
+  vec3.transformQuat(up, up, quatOrientation);
+  vec3.transformQuat(viewDir, viewDir, quatOrientation);
+
+  // Scale by view direction so camera travels towards eyepoint
+  vec3.scale(translationVec, viewDir, velocity);
+  vec3.add(eyePt, eyePt, translationVec);
+
+  // Update view vectors (up, viewDir, eyePt)
+  generateView();
+  
+  mvPush(mvMatrix);
+
+  // Standard view matrix
+  mat4.rotateY(mvMatrix, mvMatrix, degToRad(viewRot + 30));
+  mat4.rotateX(mvMatrix, mvMatrix, degToRad(-70));
+
+  setShaderModelView();
+  setShaderNormal(mvMatrix);
+  mvPop();
+
+  setShaderProjection();
 
   // Check if fog should be enabled
   if(document.getElementById('r1').checked) {
@@ -392,15 +427,12 @@ function tick() {
   }
 
   // Display pitch on html
-  document.getElementById("pitch").innerHTML = "Initial spheres: " + numInitialSpheres;
+  document.getElementById("pitch").innerHTML = "Pitch: " + pitchAngle + " Roll: " + rollAngle + " Speed: " + velocity * 1000;
 
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  // Test drawing one particle
-  for (let i = 0; i < particleSet.length; i++) {
-	particleSet[i].draw();
-  }
-  //draw();
-  
+  setFogUniform(fogDensity);
+
+  // Draw call
+  drawTerrain();
 }
 
 /**
